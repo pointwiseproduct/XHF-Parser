@@ -1,0 +1,10 @@
+C:\Users\user\documents\visual studio 2017\Projects\fstest\fstest\bin\Debug\fstest.exe.config
+C:\Users\user\documents\visual studio 2017\Projects\fstest\fstest\bin\Debug\fstest.XML
+C:\Users\user\documents\visual studio 2017\Projects\fstest\fstest\bin\Debug\fstest.exe
+C:\Users\user\documents\visual studio 2017\Projects\fstest\fstest\bin\Debug\fstest.pdb
+C:\Users\user\documents\visual studio 2017\Projects\fstest\fstest\bin\Debug\FSharp.Core.dll
+C:\Users\user\documents\visual studio 2017\Projects\fstest\fstest\bin\Debug\System.ValueTuple.dll
+C:\Users\user\documents\visual studio 2017\Projects\fstest\fstest\bin\Debug\FSharp.Core.xml
+C:\Users\user\documents\visual studio 2017\Projects\fstest\fstest\bin\Debug\ja\FSharp.Core.resources.dll
+C:\Users\user\documents\visual studio 2017\Projects\fstest\fstest\obj\Debug\fstest.exe
+C:\Users\user\documents\visual studio 2017\Projects\fstest\fstest\obj\Debug\fstest.pdb
