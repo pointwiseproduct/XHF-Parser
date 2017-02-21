@@ -20,7 +20,7 @@ module Data = begin
         | FieldSubscript of string
 
     and FieldValue =
-        | FieldPayload of TextPayload
+        | FieldTextPayload of TextPayload
         | FieldDict of DictBlock
         | FieldArray of ArrayBlock
         | FieldSpecial of SpecialExpr
@@ -48,6 +48,13 @@ module Parser = begin
 
     // --------
     let failedToken (s:int) = ("", s)
+
+    // --------
+    // rev
+    let rec reverse<'T> (ts:'T list) =
+        match ts with
+            | a :: rest -> (reverse<'T> rest) @ [a]
+            | [] -> []
 
     // --------
     let existList (fs:(string -> int -> string * int) list) (str:string) (s:int) =
@@ -175,13 +182,19 @@ module Parser = begin
     // --------
     // concatenation
     // (stop concat)
-    let (<->) (str:string, s:int, t:int) () = (str, s)
+    let (<->) (str:string, s:int, t:int) () =
+        (str, s)
 
     // --------
     // extractParserContext
-    let extractParserContext<'T> (f:string -> int -> ((string * int) * 'T)) (acc:'T -> unit) (str:string) (s:int) =
+    let evalAndProc (f:string -> int -> (string * int)) (acc:string -> unit) (str:string) (s:int) =
+        let (t, u) = f str s
+        if u <> s then acc t else ()
+        (t, u)
+
+    let evalAndProcT<'T> (f:string -> int -> ((string * int) * 'T)) (acc:'T -> unit) (str:string) (s:int) =
         let ((a, b), t) = f str s
-        acc t
+        if b <> s then acc t else ()
         (a, b)
 
     // --------
@@ -263,7 +276,7 @@ module Parser = begin
                 <-> ()
             with
                 | ConcatenationFailed -> failedToken s
-                | _ -> reraise()
+                | _ -> reraise ()
 
     // --------
     // field-subscript
@@ -280,8 +293,8 @@ module Parser = begin
                 (temp, Data.FieldSubscript name)
             with
                 | ConcatenationFailed -> (failedToken s, Data.FieldSubscript "")
-                | _ -> reraise()
-        
+                | _ -> reraise ()
+
     // --------
     // field-name
     let fieldName (str:string) (s:int) =
@@ -292,13 +305,46 @@ module Parser = begin
             let temp =
                 (str, s, s)
                 >-- (pls NAME, (fun str -> name <- str))
-                >>> (ast (extractParserContext fieldSubscript (fun a -> subscriptList <- a :: subscriptList)))
+                >>> (ast (evalAndProcT fieldSubscript (fun a -> subscriptList <- a :: subscriptList)))
                 <-> ()
-            (temp, Data.FieldName (name, subscriptList))
+            (temp, Data.FieldName (name, reverse subscriptList))
         with
             | ConcatenationFailed -> (failedToken s, Data.FieldName ("", []))
-            | _ -> reraise()
+            | _ -> reraise ()
 
+    // --------
+    // partial-text
+    let partialText (str:string) (s:int) =
+        if s >= str.Length then failedToken s else
+        try
+        let mutable tx = ""
+        let (t, u) =
+            (str, s, s)
+            >-- (pls NONNL, (fun str -> tx <- str))
+            <-> ()
+        (tx, u)
+        with
+            | ConcatenationFailed -> failedToken s
+            | _ -> reraise ()
+
+    // --------
+    // trimmed-text
+    let trimmedText (str:string) (s:int) =
+        if s >= str.Length then (failedToken s, Data.Trimmed []) else
+        try
+        let mutable tx:string list = []
+        let temp =
+            (str, s, s)
+            >>> SPTAB
+            >>> (ast (existList [
+                evalAndProc partialText (fun str -> tx <- str :: tx);
+                (fun a b -> (a, b, b) >>> NL >-- (SPTAB, (fun str -> tx <- ("\n" + str) :: tx)) <-> ())
+            ]))
+            <-> ()
+        (temp, Data.Trimmed (reverse tx))
+        with
+            | ConcatenationFailed -> (failedToken s, Data.Trimmed [])
+            | _ -> reraise ()
 end;;
 
 // --------
@@ -309,6 +355,11 @@ let printParser f (str:string) (s:int) =
 
 [<EntryPoint>]
 let main argv =
+    printParser (
+        fun a b ->
+            let temp = Parser.trimmedText a b
+            fst temp
+    )  " \n \n aaa" 0
     printParser (
         fun a b ->
             let temp = Parser.fieldName a b
