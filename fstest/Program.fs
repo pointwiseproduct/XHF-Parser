@@ -6,6 +6,7 @@ module Data = begin
     type Block = Item list
 
     and Item =
+        | ItemNull
         | ItemFieldPair of FieldPair
         | ItemSingleText of SingleText
         | ItemDict of DictBlock
@@ -25,6 +26,8 @@ module Data = begin
         | FieldArray of ArrayBlock
         | FieldSpecial of SpecialExpr
 
+    and SingleText = TextPayload
+
     and TextPayload =
         | TextPayloadNull
         | Trimmed of string list
@@ -32,7 +35,6 @@ module Data = begin
 
     and TrimmedText = string list
     and VerbatimText = string list
-    and SingleText = TextPayload
 
     and DictBlock = Dictionary<FieldName, FieldValue>
     and ArrayBlock = Item list
@@ -267,34 +269,37 @@ module Parser = begin
     // --------
     // special-expr
     let specialExpr (str:string) (s:int) =
-        if s >= str.Length then failedToken s else
-            try
+        if s >= str.Length then (failedToken s, "") else
+        try
+            let mutable special = ""
+            let temp =
                 (str, s, s)
                 >>> (matchStr "=")
                 >>> SPTAB
-                >>> knownSpecials
+                >-- (knownSpecials, (fun a -> special <- a))
                 >>> NL
                 <-> ()
-            with
-                | ConcatenationFailed -> failedToken s
-                | _ -> reraise ()
+            (temp, special)
+        with
+            | ConcatenationFailed -> (failedToken s, "")
+            | _ -> reraise ()
 
     // --------
     // field-subscript
     let fieldSubscript (str:string) (s:int) =
         if s >= str.Length then (failedToken s, Data.FieldSubscript "") else
-            try
-                let mutable name = ""
-                let temp =
-                    (str, s, s)
-                    >>> (matchStr "[")
-                    >-- (ast NAME, (fun str -> name <- str))
-                    >>> (matchStr "]")
-                    <-> ()
-                (temp, Data.FieldSubscript name)
-            with
-                | ConcatenationFailed -> (failedToken s, Data.FieldSubscript "")
-                | _ -> reraise ()
+        try
+            let mutable name = ""
+            let temp =
+                (str, s, s)
+                >>> (matchStr "[")
+                >-- (ast NAME, (fun str -> name <- str))
+                >>> (matchStr "]")
+                <-> ()
+            (temp, Data.FieldSubscript name)
+        with
+            | ConcatenationFailed -> (failedToken s, Data.FieldSubscript "")
+            | _ -> reraise ()
 
     // --------
     // field-name
@@ -402,6 +407,63 @@ module Parser = begin
         with
             | ConcatenationFailed -> (failedToken s, Data.TextPayloadNull)
             | _ -> reraise ()
+
+    // -------
+    // xhfItem
+    let rec xhfItem (str:string) (s:int) =
+        if s >= str.Length then (failedToken s, Data.ItemNull) else
+        try
+            let mutable item = Data.ItemNull
+            let temp =
+                (str, s, s)
+                >>> (existList [
+                    // fieldPair
+                    evalAndProcT singleText (fun a -> item <- Data.ItemSingleText a);
+                    // dictBlock
+                    evalAndProcT arrayBlock (fun a -> item <- Data.ItemArray a);
+                    evalAndProcT specialExpr (fun a -> item <- Data.ItemSpecialExpr a);
+                    comment
+                ])
+                <-> ()
+            (temp, item)
+        with
+            | ConcatenationFailed -> (failedToken s, Data.ItemNull)
+            | _ -> reraise ()
+
+    // --------
+    // single-text
+    and singleText (str:string) (s:int) = 
+        if s >= str.Length then (failedToken s, Data.TextPayloadNull) else
+        try
+            let mutable payload:Data.SingleText = Data.TextPayloadNull
+            let temp =
+                (str, s, s)
+                >>> matchStr "-"
+                >>> (evalAndProcT textPayload (fun a -> payload <- a))
+                <-> ()
+            (temp, payload)
+        with
+            | ConcatenationFailed -> (failedToken s, Data.TextPayloadNull)
+            | _ -> reraise ()
+
+    // --------
+    // array-block
+    and arrayBlock (str:string) (s:int) =
+        if s >= str.Length then (failedToken s, []) else
+        try
+            let mutable block:Data.ArrayBlock = []
+            let temp =
+                (str, s, s)
+                >>> matchStr "["
+                >>> NL
+                >>> (ast (evalAndProcT xhfItem (fun a -> if a <> Data.ItemNull then block <- a :: block else ())))
+                >>> matchStr "]"
+                >>> NL
+                <-> ()
+            (temp, reverse block)
+        with
+            | ConcatenationFailed -> (failedToken s, [])
+            | _ -> reraise ()
 end;;
 
 // --------
@@ -414,14 +476,19 @@ let printParser f (str:string) (s:int) =
 let main argv =
     printParser (
         fun a b ->
-            let temp = Parser.textPayload a b
+            let temp = Parser.xhfItem a b
             fst temp
-    )  " \n \n aaa\n" 0
+    )  "[\n-\n\n \n aaa\n-\n\n \n bbb\n#hogepiyo\n= #null\n]\n" 0
     printParser (
         fun a b ->
-            let temp = Parser.trimmedText a b
+            let temp = Parser.xhfItem a b
             fst temp
-    )  " \n \n aaa" 0
+    )  "-\n\n \n aaa\n" 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfItem a b
+            fst temp
+    )  "- \n \n aaa\n" 0
     printParser (
         fun a b ->
             let temp = Parser.fieldName a b
@@ -432,11 +499,16 @@ let main argv =
             let temp = Parser.fieldSubscript a b
             fst temp
     )  "[hogehoge]" 0
-    printParser (Parser.repeatInfSup 3 5 (Parser.matchStr "a")) "aaaa" 0
-    printParser (Parser.repeatInf 3 (Parser.matchStr "a")) "aaaaaa" 0
-    printParser (Parser.repeatSup 4 (Parser.matchStr "a")) "aaaaa" 0
-    printParser Parser.specialExpr "= #null\n" 0
-    printParser Parser.specialExpr "= #nul\n" 0
+    printParser (
+        fun a b ->
+            let temp = Parser.specialExpr a b
+            fst temp
+    )  "= #null\n" 0
+    printParser (
+        fun a b ->
+            let temp = Parser.specialExpr a b
+            fst temp
+    )  "= #nul\n" 0
     printParser Parser.knownSpecials "#undef" 0
     printParser Parser.knownSpecials "#null" 0
     printParser (Parser.existList [Parser.matchStr "null"; Parser.matchStr "undef"]) "null" 0
