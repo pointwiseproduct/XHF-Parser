@@ -26,6 +26,7 @@ module Data = begin
         | FieldSpecial of SpecialExpr
 
     and TextPayload =
+        | TextPayloadNull
         | Trimmed of string list
         | Verbatim of string list
 
@@ -338,12 +339,68 @@ module Parser = begin
             >>> SPTAB
             >>> (ast (existList [
                 evalAndProc partialText (fun str -> tx <- str :: tx);
-                (fun a b -> (a, b, b) >>> NL >-- (SPTAB, (fun str -> tx <- ("\n" + str) :: tx)) <-> ())
+                (fun a b ->
+                    try
+                        (a, b, b)
+                        >>> NL
+                        >-- (SPTAB, (fun str -> tx <- ("\n" + str) :: tx))
+                        <-> ()
+                    with
+                        | ConcatenationFailed -> failedToken b
+                        | _ -> reraise ()
+                )
             ]))
             <-> ()
         (temp, Data.Trimmed (reverse tx))
         with
             | ConcatenationFailed -> (failedToken s, Data.Trimmed [])
+            | _ -> reraise ()
+
+    // --------
+    // verbatim-text
+    let verbatimText (str:string) (s:int) =
+        if s >= str.Length then (failedToken s, Data.Verbatim []) else
+        try
+        let mutable tx:string list = []
+        let temp =
+            (str, s, s)
+            >>> NL
+            >>> (ast (existList [
+                evalAndProc partialText (fun str -> tx <- str :: tx);
+                (fun a b ->
+                    try
+                        (a, b, b)
+                        >>> NL
+                        >-- (SPTAB, (fun str -> tx <- ("\n" + str) :: tx))
+                        <-> ()
+                    with
+                        | ConcatenationFailed -> failedToken b
+                        | _ -> reraise ()
+                )
+            ]))
+            <-> ()
+        (temp, Data.Verbatim (reverse tx))
+        with
+            | ConcatenationFailed -> (failedToken s, Data.Verbatim [])
+            | _ -> reraise ()
+
+    // --------
+    // text-payload
+    let textPayload (str:string) (s:int) =
+        if s >= str.Length then (failedToken s, Data.TextPayloadNull) else
+        try
+            let mutable payload:Data.TextPayload = Data.TextPayloadNull
+            let temp =
+                (str, s, s)
+                >>> (existList [
+                    evalAndProcT trimmedText (fun a -> payload <- a);
+                    evalAndProcT verbatimText (fun a -> payload <- a)
+                ])
+                >>> NL
+                <-> ()
+            (temp, payload)
+        with
+            | ConcatenationFailed -> (failedToken s, Data.TextPayloadNull)
             | _ -> reraise ()
 end;;
 
@@ -355,6 +412,11 @@ let printParser f (str:string) (s:int) =
 
 [<EntryPoint>]
 let main argv =
+    printParser (
+        fun a b ->
+            let temp = Parser.textPayload a b
+            fst temp
+    )  " \n \n aaa\n" 0
     printParser (
         fun a b ->
             let temp = Parser.trimmedText a b
