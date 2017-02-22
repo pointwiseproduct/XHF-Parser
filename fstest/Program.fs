@@ -13,6 +13,22 @@ module Data = begin
         | ItemArray of ArrayBlock
         | ItemSpecialExpr of SpecialExpr
 
+    and DictKey =
+        | DictKeyNull
+        | DictKeyFieldName of FieldName
+        | DictKeySingleText of SingleText
+        | DictKeyDict of DictBlock
+        | DictKeyArray of ArrayBlock
+        | DictKeySpecialExpr of SpecialExpr
+
+    and DictItem =
+        | DictItemNull
+        | DictItemFieldValue of FieldValue
+        | DictItemSingleText of SingleText
+        | DictItemDict of DictBlock
+        | DictItemArray of ArrayBlock
+        | DictItemSpecialExpr of SpecialExpr
+
     and FieldPair = 
         | FieldPairNull
         | FieldPair of FieldName * FieldValue
@@ -41,7 +57,7 @@ module Data = begin
     and TrimmedText = string list
     and VerbatimText = string list
 
-    and DictBlock = Dictionary<FieldName, FieldValue>
+    and DictBlock = Dictionary<DictKey, DictItem>
     and ArrayBlock = Item list
 
     and SpecialExpr = KnownSpecials
@@ -52,10 +68,10 @@ end;;
 
 module Parser = begin
     // --------
-    let subToken (str:string) (s:int) (r:int) = ((str.[s..(r - 1)]), r)
+    let subToken (str:string) (s:int) (r:int) = ((str.[s..(r - 1)]), r, true)
 
     // --------
-    let failedToken (s:int) = ("", s)
+    let failedToken (s:int) = ("", s, false)
 
     // --------
     // rev
@@ -65,21 +81,21 @@ module Parser = begin
             | [] -> []
 
     // --------
-    let existList (fs:(string -> int -> string * int) list) (str:string) (s:int) =
+    let existList (fs:(string -> int -> string * int * bool) list) (str:string) (s:int) =
         if s >= str.Length then failedToken s else
             let rec g list =
                 match list with
-                | f :: tail ->
-                    let (tu, ts) = f str s
-                    if ts = s then
-                        g tail
-                    else (tu, ts)
-                | [] -> failedToken s
+                    | f :: tail ->
+                        let (tu, ts, res) = f str s
+                        if not res then
+                            g tail
+                        else (tu, ts, true)
+                    | [] -> failedToken s
             g fs
 
     // --------
     // fのinf以上sup以下の繰り返し
-    let repeatInfSup (inf:int) (sup:int) (f:string -> int -> string * int) (str:string) (s:int) =
+    let repeatInfSup (inf:int) (sup:int) (f:string -> int -> string * int * bool) (str:string) (s:int) =
         if s >= str.Length then failedToken s else
             let mutable i = 0
             let mutable r = s
@@ -89,10 +105,10 @@ module Parser = begin
                     then
                         if inf <= i
                         then subToken str s r
-                        else (str.[s..str.Length], str.Length)
+                        else (str.[s..str.Length], str.Length, false)
                     else
-                        let (tu, ts) = f str r
-                        if ts <> r then
+                        let (tu, ts, res) = f str r
+                        if res then
                             i <- i + 1
                             r <- ts
                             g()
@@ -104,7 +120,7 @@ module Parser = begin
 
     // --------
     // fのinf以上の繰り返し
-    let repeatInf (inf:int) (f:string -> int -> string * int) (str:string) (s:int) =
+    let repeatInf (inf:int) (f:string -> int -> string * int * bool) (str:string) (s:int) =
         if s >= str.Length then failedToken s else
             let mutable i = 0
             let mutable r = s
@@ -113,10 +129,10 @@ module Parser = begin
                 then
                     if inf <= i
                     then subToken str s r
-                    else (str.[s..str.Length], str.Length)
+                    else (str.[s..str.Length], str.Length, false)
                 else
-                    let (tu, ts) = f str r
-                    if ts <> r then
+                    let (tu, ts, res) = f str r
+                    if res then
                         i <- i + 1
                         r <- ts
                         g()
@@ -128,7 +144,7 @@ module Parser = begin
 
     // --------
     // fのsup以下の繰り返し
-    let repeatSup (sup:int) (f:string -> int -> string * int) (str:string) (s:int) =
+    let repeatSup (sup:int) (f:string -> int -> string * int * bool) (str:string) (s:int) =
         if s >= str.Length then failedToken s else
             let mutable i = 0
             let mutable r = s
@@ -138,8 +154,8 @@ module Parser = begin
                     then
                         subToken str s r
                     else
-                        let (tu, ts) = f str r
-                        if ts <> r then
+                        let (tu, ts, res) = f str r
+                        if res then
                             i <- i + 1
                             r <- ts
                             g()
@@ -148,14 +164,14 @@ module Parser = begin
 
     // --------
     // fの0回以上の繰り返し
-    let ast (f:string -> int -> string * int) (str:string) (s:int) =
+    let ast (f:string -> int -> string * int * bool) (str:string) (s:int) =
         if s >= str.Length then failedToken s else
             let mutable r = s
             let rec g() =
                 if r >= str.Length then subToken str s r
                 else
-                    let (tu, ts) = f str r
-                    if ts <> r then
+                    let (tu, ts, res) = f str r
+                    if res then
                         r <- ts
                         g()
                     else subToken str s r
@@ -163,7 +179,7 @@ module Parser = begin
 
     // --------
     // fの0回以上の繰り返し
-    let pls (f:string -> int -> string * int) (str:string) (s:int) = repeatInf 1 f str s
+    let pls (f:string -> int -> string * int * bool) (str:string) (s:int) = repeatInf 1 f str s
 
     // --------
     // 連結パーシングの例外
@@ -172,17 +188,17 @@ module Parser = begin
     // --------
     // concatenation
     // (next parser)
-    let (>>>) (str:string, s:int, t:int) (f:string -> int -> string * int) =
-        let (tu, ts) = f str s
-        if ts = s && ts <> str.Length then raise ConcatenationFailed
+    let (>>>) (str:string, s:int, t:int) (f:string -> int -> string * int * bool) =
+        let (tu, ts, res) = f str s
+        if not res then raise ConcatenationFailed
         else (str, ts, t)
 
     // --------
     // concatenation
     // (proccess intruding)
-    let (>--) (str:string, s:int, t:int) ((f:string -> int -> string * int), g:string -> unit) =
-        let (tu, ts) = f str s
-        if ts = s then raise ConcatenationFailed
+    let (>--) (str:string, s:int, t:int) ((f:string -> int -> string * int * bool), g:string -> unit) =
+        let (tu, ts, res) = f str s
+        if not res then raise ConcatenationFailed
         else
             g tu
             (str, ts, t)
@@ -191,19 +207,19 @@ module Parser = begin
     // concatenation
     // (stop concat)
     let (<->) (str:string, s:int, t:int) () =
-        (str, s)
+        (str, s, true)
 
     // --------
     // extractParserContext
-    let evalAndProc (f:string -> int -> (string * int)) (acc:string -> unit) (str:string) (s:int) =
-        let (t, u) = f str s
-        if u <> s then acc t else ()
-        (t, u)
+    let evalAndProc (f:string -> int -> (string * int * bool)) (acc:string -> unit) (str:string) (s:int) =
+        let (t, u, res) = f str s
+        if res then acc t else ()
+        (t, u, res)
 
-    let evalAndProcT<'T> (f:string -> int -> ((string * int) * 'T)) (acc:'T -> unit) (str:string) (s:int) =
-        let ((a, b), t) = f str s
-        if b <> s then acc t else ()
-        (a, b)
+    let evalAndProcT<'T> (f:string -> int -> ((string * int * bool) * 'T)) (acc:'T -> unit) (str:string) (s:int) =
+        let ((a, b, res), t) = f str s
+        if res then acc t else ()
+        (a, b, res)
 
     // --------
     // 一致
@@ -236,8 +252,8 @@ module Parser = begin
     // --------
     let matchOne f (str:string) (s:int) =
         if s >= str.Length then failedToken s else
-            if f str.[s] then
-                subToken str s (s + 1)
+            if f str.[s]
+            then subToken str s (s + 1)
             else failedToken s
 
     let NL = matchOne isNL
@@ -253,10 +269,10 @@ module Parser = begin
             if str.[r] = '#' then
                 r <- r + 1
                 let mutable dummy = 0
-                let mutable (tu, ts) = ast NONNL str r
-                if ts = r then failedToken s
-                else if isNL str.[ts] then
-                    subToken str s (ts + 1)
+                let mutable (tu, ts, res) = ast NONNL str r
+                if not res then failedToken s
+                else if isNL str.[ts]
+                    then subToken str s (ts + 1)
                     else failedToken s
             else failedToken s
 
@@ -264,11 +280,11 @@ module Parser = begin
     // known-specials
     let knownSpecials (str:string) (s:int) =
         if s >= str.Length then failedToken s else
-            if str.[s] = '#' then
-                let (ru, rs) = (existList [matchStr "null"; matchStr "undef"] str (s + 1))
-                if rs = (s + 1) then
-                    failedToken s
-                else subToken str s rs
+            if str.[s] = '#'
+            then let (ru, rs, res) = (existList [matchStr "null"; matchStr "undef"] str (s + 1))
+                 if rs = (s + 1)
+                 then failedToken s
+                 else subToken str s rs
             else failedToken s
 
     // --------
@@ -329,11 +345,11 @@ module Parser = begin
         if s >= str.Length then failedToken s else
         try
         let mutable tx = ""
-        let (t, u) =
+        let (t, u, res) =
             (str, s, s)
             >-- (pls NONNL, (fun str -> tx <- str))
             <-> ()
-        (tx, u)
+        (tx, u, res)
         with
             | ConcatenationFailed -> failedToken s
             | _ -> reraise ()
@@ -424,7 +440,7 @@ module Parser = begin
                 >>> (existList [
                     evalAndProcT fieldPair (fun a -> item <- Data.ItemFieldPair a);
                     evalAndProcT singleText (fun a -> item <- Data.ItemSingleText a);
-                    // dictBlock
+                    evalAndProcT dictBlock (fun a -> item <- Data.ItemDict a);
                     evalAndProcT arrayBlock (fun a -> item <- Data.ItemArray a);
                     evalAndProcT specialExpr (fun a -> item <- Data.ItemSpecialExpr a);
                     comment
@@ -471,7 +487,7 @@ module Parser = begin
                             | ConcatenationFailed -> failedToken b
                             | _ -> reraise ()
                     );
-                    // dictBlock
+                    evalAndProcT dictBlock (fun a -> value <- Data.FieldDict a);
                     evalAndProcT arrayBlock (fun a -> value <- Data.FieldArray a);
                     evalAndProcT specialExpr (fun a -> value <- Data.FieldSpecial a)
                 ])
@@ -498,6 +514,53 @@ module Parser = begin
             | _ -> reraise ()
 
     // --------
+    // dict-block
+    and dictBlock (str:string) (s:int) =
+        if s >= str.Length then (failedToken s, new Data.DictBlock ()) else
+        try
+            let mutable dict:Data.DictBlock = new Data.DictBlock ()
+            let mutable key:Data.DictKey = Data.DictKeyNull
+            let mutable phase = 0
+            let temp =
+                (str, s, s)
+                >>> matchStr "{"
+                >>> NL
+                >>> (ast (evalAndProcT xhfItem
+                    (fun a ->
+                        match a with
+                        | Data.ItemNull -> ()
+                        | Data.ItemFieldPair (Data.FieldPair (p, q)) ->
+                            if phase = 0
+                            then dict.Add(Data.DictKeyFieldName p, Data.DictItemFieldValue q)
+                            else raise ConcatenationFailed
+                        | Data.ItemSingleText b ->
+                            if phase = 0
+                            then phase <- 1; key <- Data.DictKeySingleText b
+                            else phase <- 0; dict.Add(key, Data.DictItemSingleText b)
+                        | Data.ItemDict b ->
+                            if phase = 0
+                            then phase <- 1; key <- Data.DictKeyDict b
+                            else phase <- 0; dict.Add(key, Data.DictItemDict b)
+                        | Data.ItemArray b ->
+                            if phase = 0
+                            then phase <- 1; key <- Data.DictKeyArray b
+                            else phase <- 0; dict.Add(key, Data.DictItemArray b)
+                        | Data.ItemSpecialExpr b ->
+                            if phase = 0
+                            then phase <- 1; key <- Data.DictKeySpecialExpr b
+                            else phase <- 0; dict.Add(key, Data.DictItemSpecialExpr b)
+                        | _ -> raise ConcatenationFailed
+                    )
+                ))
+                >>> matchStr "}"
+                >>> NL
+                <-> ()
+            (temp, dict)
+        with
+            | ConcatenationFailed -> (failedToken s, new Data.DictBlock ())
+            | _ -> reraise ()
+
+    // --------
     // array-block
     and arrayBlock (str:string) (s:int) =
         if s >= str.Length then (failedToken s, []) else
@@ -507,7 +570,13 @@ module Parser = begin
                 (str, s, s)
                 >>> matchStr "["
                 >>> NL
-                >>> (ast (evalAndProcT xhfItem (fun a -> if a <> Data.ItemNull then block <- a :: block else ())))
+                >>> (ast (evalAndProcT xhfItem
+                    (fun a ->
+                        if a <> Data.ItemNull
+                        then block <- a :: block
+                        else ()
+                    )
+                ))
                 >>> matchStr "]"
                 >>> NL
                 <-> ()
@@ -519,12 +588,17 @@ end;;
 
 // --------
 let printParser f (str:string) (s:int) =
-    let (tu, ts) = f str s
-    printfn "%d:%s" ts tu
+    let (tu, ts, res) = f str s
+    printfn "%d:%b:%s" ts res tu
     ()
 
 [<EntryPoint>]
 let main argv =
+    printParser (
+        fun a b ->
+            let temp = Parser.dictBlock a b
+            fst temp
+    )  "{\ntitle: Witch Craft Works\nheroine: Ayaka Kagari\n# (5) You can use leading \"-\" for hash key/value too (so that include any chars)\n- Witch, Witch!\n- Tower and Workshop!\n}\n" 0
     printParser (
         fun a b ->
             let temp = Parser.xhfItem a b
