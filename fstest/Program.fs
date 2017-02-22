@@ -3,7 +3,9 @@ open System.IO
 open System.Collections.Generic
 
 module Data = begin
-    type Block = Item list
+    type Block =
+        | BlockNull
+        | Block of Item list
 
     and Item =
         | ItemNull
@@ -430,8 +432,23 @@ module Parser = begin
             | _ -> reraise ()
 
     // -------
+    // xhfBlock
+    let rec xhfBlock (str:string) (s:int) =
+        if s >= str.Length then (failedToken s, Data.BlockNull) else
+        try
+            let mutable block:Data.Item list = []
+            let temp =
+                (str, s, s)
+                >>> (pls (evalAndProcT xhfItem (fun a -> if a <> Data.ItemNull then block <- a :: block else ())))
+                <-> ()
+            (temp, Data.Block (reverse block))
+        with
+            | ConcatenationFailed -> (failedToken s, Data.BlockNull)
+            | _ -> reraise ()
+
+    // -------
     // xhfItem
-    let rec xhfItem (str:string) (s:int) =
+    and xhfItem (str:string) (s:int) =
         if s >= str.Length then (failedToken s, Data.ItemNull) else
         try
             let mutable item = Data.ItemNull
@@ -555,6 +572,9 @@ module Parser = begin
                 >>> matchStr "}"
                 >>> NL
                 <-> ()
+            if phase <> 0
+            then raise ConcatenationFailed
+            else ()
             (temp, dict)
         with
             | ConcatenationFailed -> (failedToken s, new Data.DictBlock ())
@@ -594,6 +614,11 @@ let printParser f (str:string) (s:int) =
 
 [<EntryPoint>]
 let main argv =
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    )  "name: hkoba\n# (1) You can write a comment line here, starting with \'#\'.\njob: Programming Language Designer (self-described;-)\nskill: Random\nemployed: 0\nfoods[\n- Sushi\n#(2) here too. You don\'t need space after \'#\'. This will be good for \'#!\'\n- Tonkatsu\n- Curry and Rice\n[\n- More nested elements\n]\n]\nfavorites[\n# (3) here also.\n{\ntitle: Chaika - The Coffin Princess\n# (4) ditto.\nheroine: Chaika Trabant\n}\n{\ntitle: Witch Craft Works\nheroine: Ayaka Kagari\n# (5) You can use leading \"-\" for hash key/value too (so that include any chars)\n- Witch, Witch!\n- Tower and Workshop!\n}\n# (6) You can put NULL(undef) like below. (equal space sharp+keyword)\n= #null\n]\n" 0
     printParser (
         fun a b ->
             let temp = Parser.dictBlock a b
