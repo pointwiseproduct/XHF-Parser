@@ -13,14 +13,19 @@ module Data = begin
         | ItemArray of ArrayBlock
         | ItemSpecialExpr of SpecialExpr
 
-    and FieldPair = FieldName * FieldValue
+    and FieldPair = 
+        | FieldPairNull
+        | FieldPair of FieldName * FieldValue
+
     and FieldName =
+        | FieldNameNull
         | FieldName of string * FieldSubscript list
 
     and FieldSubscript =
         | FieldSubscript of string
 
     and FieldValue =
+        | FieldValueNull
         | FieldTextPayload of TextPayload
         | FieldDict of DictBlock
         | FieldArray of ArrayBlock
@@ -417,7 +422,7 @@ module Parser = begin
             let temp =
                 (str, s, s)
                 >>> (existList [
-                    // fieldPair
+                    evalAndProcT fieldPair (fun a -> item <- Data.ItemFieldPair a);
                     evalAndProcT singleText (fun a -> item <- Data.ItemSingleText a);
                     // dictBlock
                     evalAndProcT arrayBlock (fun a -> item <- Data.ItemArray a);
@@ -428,6 +433,52 @@ module Parser = begin
             (temp, item)
         with
             | ConcatenationFailed -> (failedToken s, Data.ItemNull)
+            | _ -> reraise ()
+
+    // --------
+    // field-pair
+    and fieldPair (str:string) (s:int) =
+        if s >= str.Length then (failedToken s, Data.FieldPairNull) else
+        try
+            let mutable name:Data.FieldName = Data.FieldNameNull
+            let mutable value:Data.FieldValue = Data.FieldValueNull
+            let temp =
+                (str, s, s)
+                >>> evalAndProcT fieldName (fun a -> name <- a)
+                >>> evalAndProcT fieldValue (fun a -> value <- a)
+                <-> ()
+            (temp, Data.FieldPair (name, value))
+        with
+            | ConcatenationFailed -> (failedToken s, Data.FieldPairNull)
+            | _ -> reraise ()
+
+    // --------
+    // field-value
+    and fieldValue (str:string) (s:int) =
+        if s >= str.Length then (failedToken s, Data.FieldValueNull) else
+        try
+            let mutable value:Data.FieldValue = Data.FieldValueNull
+            let temp =
+                (str, s, s)
+                >>> (existList [
+                    (fun a b ->
+                        try
+                            (a, b, b)
+                            >>> matchStr ":"
+                            >>> evalAndProcT textPayload (fun x -> value <- Data.FieldTextPayload x)
+                            <-> ()
+                        with
+                            | ConcatenationFailed -> failedToken b
+                            | _ -> reraise ()
+                    );
+                    // dictBlock
+                    evalAndProcT arrayBlock (fun a -> value <- Data.FieldArray a);
+                    evalAndProcT specialExpr (fun a -> value <- Data.FieldSpecial a)
+                ])
+                <-> ()
+            (temp, value)
+        with
+            | ConcatenationFailed -> (failedToken s, Data.FieldValueNull)
             | _ -> reraise ()
 
     // --------
