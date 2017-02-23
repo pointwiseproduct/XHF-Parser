@@ -1,0 +1,3 @@
+FILE: index.yatt
+BODY:
+ <h2>‚â‚Á‚ÆŠ¿Žš</h2>

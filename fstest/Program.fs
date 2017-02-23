@@ -64,8 +64,6 @@ module Data = begin
 
     and SpecialExpr = KnownSpecials
     and KnownSpecials = string
-
-    let specialDataNull:KnownSpecials = "null"
 end;;
 
 module Parser = begin
@@ -394,17 +392,19 @@ module Parser = begin
             (str, s, s)
             >>> NL
             >>> (ast (existList [
-                evalAndProc partialText (fun str -> tx <- str :: tx);
+                evalAndProc partialText (fun str ->
+                                            if str.[0] <> ' '
+                                            then tx <- str :: tx
+                                            else tx <- str.[1..(str.Length - 1)] :: tx);
                 (fun a b ->
                     try
                         (a, b, b)
                         >>> NL
-                        >-- (SPTAB, (fun str -> tx <- ("\n" + str) :: tx))
+                        >>> SPTAB
                         <-> ()
                     with
                         | ConcatenationFailed -> failedToken b
-                        | _ -> reraise ()
-                )
+                        | _ -> reraise ())
             ]))
             <-> ()
         (temp, Data.Verbatim (reverse tx))
@@ -436,11 +436,26 @@ module Parser = begin
     let rec xhfBlock (str:string) (s:int) =
         if s >= str.Length then (failedToken s, Data.BlockNull) else
         try
+            let mutable i = s
             let mutable block:Data.Item list = []
-            let temp =
-                (str, s, s)
-                >>> (pls (evalAndProcT xhfItem (fun a -> if a <> Data.ItemNull then block <- a :: block else ())))
-                <-> ()
+            let mutable temp:string * int * bool = ("", s, false)
+            let rec g () =
+                let (tu, ts, tb) =
+                    (str, i, i)
+                    >>> (pls (evalAndProcT xhfItem (fun a -> if a <> Data.ItemNull then block <- a :: block else ())))
+                    <-> ()
+                if not tb
+                then raise ConcatenationFailed
+                else if ts <> str.Length
+                then
+                    let (su, ss, sb) =
+                        (str, ts, ts)
+                        >>> pls NL
+                        <-> ()
+                    i <- ss;
+                    g ()
+                else temp <- (tu, ts, tb)
+            g ()
             (temp, Data.Block (reverse block))
         with
             | ConcatenationFailed -> (failedToken s, Data.BlockNull)
@@ -607,9 +622,22 @@ module Parser = begin
 end;;
 
 // --------
+// ファイルを読み込む
+let readFile (path:string) =
+    use fileReader = new StreamReader(path)
+    let mutable str:string = ""
+    while not fileReader.EndOfStream do
+        str <- str + fileReader.ReadLine() + "\n"
+    str
+
+// --------
 let printParser f (str:string) (s:int) =
     let (tu, ts, res) = f str s
-    printfn "%d:%b:%s" ts res tu
+    // 左から順に
+    //  * パースが完了した時点での文字位置
+    //  * パースが正常に終了したならtrue
+    //  * パースが終了した位置が入力文字列の長さと一致したならtrue
+    printfn "%d:%b:%b" ts res (ts = str.Length)
     ()
 
 [<EntryPoint>]
@@ -618,51 +646,145 @@ let main argv =
         fun a b ->
             let temp = Parser.xhfBlock a b
             fst temp
-    )  "name: hkoba\n# (1) You can write a comment line here, starting with \'#\'.\njob: Programming Language Designer (self-described;-)\nskill: Random\nemployed: 0\nfoods[\n- Sushi\n#(2) here too. You don\'t need space after \'#\'. This will be good for \'#!\'\n- Tonkatsu\n- Curry and Rice\n[\n- More nested elements\n]\n]\nfavorites[\n# (3) here also.\n{\ntitle: Chaika - The Coffin Princess\n# (4) ditto.\nheroine: Chaika Trabant\n}\n{\ntitle: Witch Craft Works\nheroine: Ayaka Kagari\n# (5) You can use leading \"-\" for hash key/value too (so that include any chars)\n- Witch, Witch!\n- Tower and Workshop!\n}\n# (6) You can put NULL(undef) like below. (equal space sharp+keyword)\n= #null\n]\n" 0
+    ) (readFile "errdiag_1-static.txt") 0
     printParser (
         fun a b ->
-            let temp = Parser.dictBlock a b
+            let temp = Parser.xhfBlock a b
             fst temp
-    )  "{\ntitle: Witch Craft Works\nheroine: Ayaka Kagari\n# (5) You can use leading \"-\" for hash key/value too (so that include any chars)\n- Witch, Witch!\n- Tower and Workshop!\n}\n" 0
+    ) (readFile "errdiag_2-runtime.txt") 0
     printParser (
         fun a b ->
-            let temp = Parser.xhfItem a b
+            let temp = Parser.xhfBlock a b
             fst temp
-    )  "[\n-\n\n \n aaa\n-\n\n \n bbb\n#hogepiyo\n= #null\n]\n" 0
+    ) (readFile "8-newline.txt") 0
     printParser (
         fun a b ->
-            let temp = Parser.xhfItem a b
+            let temp = Parser.xhfBlock a b
             fst temp
-    )  "-\n\n \n aaa\n" 0
+    ) (readFile "7-foreach.txt") 0
     printParser (
         fun a b ->
-            let temp = Parser.xhfItem a b
+            let temp = Parser.xhfBlock a b
             fst temp
-    )  "- \n \n aaa\n" 0
+    ) (readFile "6-entpath.txt") 0
     printParser (
         fun a b ->
-            let temp = Parser.fieldName a b
+            let temp = Parser.xhfBlock a b
             fst temp
-    )  "abc[hogehoge][piyo]" 0
+    ) (readFile "5-utf8.txt") 0
     printParser (
         fun a b ->
-            let temp = Parser.fieldSubscript a b
+            let temp = Parser.xhfBlock a b
             fst temp
-    )  "[hogehoge]" 0
+    ) (readFile "4-ent.txt") 0
     printParser (
         fun a b ->
-            let temp = Parser.specialExpr a b
+            let temp = Parser.xhfBlock a b
             fst temp
-    )  "= #null\n" 0
+    ) (readFile "3-my.txt") 0
     printParser (
         fun a b ->
-            let temp = Parser.specialExpr a b
+            let temp = Parser.xhfBlock a b
             fst temp
-    )  "= #nul\n" 0
-    printParser Parser.knownSpecials "#undef" 0
-    printParser Parser.knownSpecials "#null" 0
-    printParser (Parser.existList [Parser.matchStr "null"; Parser.matchStr "undef"]) "null" 0
-    printParser (Parser.existList [Parser.matchStr "null"; Parser.matchStr "undef"]) "undef" 0
-    printParser (Parser.matchStr "test") "abc" 0
-    printParser Parser.comment "#as\n" 0
+    ) (readFile "2-if.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "1-basic.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "db_backed_2_t_1-basic.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "db_backed_1_t_basic.inc.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "db_backed_1_t_1-basic.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "basic_13_t_1-mkhidden.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "basic_12_t_1-basic.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "basic_11_t_1-basic.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "basic_10-app.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "basic_10_t_1-basic.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "basic_9_t_1-basic.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "basic_8_t_1-basic.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "basic_7_t_1-basic.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "basic_7-app.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "basic_6_t_1-basic.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "basic_5_t_1-basic.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "basic_4_t_1-basic.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "basic_3_t_1-basic.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "basic_2_t_1-basic.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "basic_1_t_1-basic.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            fst temp
+    ) (readFile "xhf-test.txt") 0
     0 // 整数の終了コードを返します

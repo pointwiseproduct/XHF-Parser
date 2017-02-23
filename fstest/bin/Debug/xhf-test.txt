@@ -1,0 +1,31 @@
+name: hkoba
+# (1) You can write a comment line here, starting with '#'.
+job: Programming Language Designer (self-described;-)
+skill: Random
+employed: 0
+foods[
+- Sushi
+#(2) here too. You don't need space after '#'. This will be good for '#!'
+- Tonkatsu
+- Curry and Rice
+[
+- More nested elements
+]
+]
+favorites[
+# (3) here also.
+{
+title: Chaika - The Coffin Princess
+# (4) ditto.
+heroine: Chaika Trabant
+}
+{
+title: Witch Craft Works
+heroine: Ayaka Kagari
+# (5) You can use leading "-" for hash key/value too (so that include any chars)
+- Witch, Witch!
+- Tower and Workshop!
+}
+# (6) You can put NULL(undef) like below. (equal space sharp+keyword)
+= #null
+]

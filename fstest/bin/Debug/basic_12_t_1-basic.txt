@@ -1,0 +1,5 @@
+FILE: index.yatt
+TITLE: Inheritance should work theoretically.
+BODY:
+ <h2>part</h2>
+ foo from ytmpl/
