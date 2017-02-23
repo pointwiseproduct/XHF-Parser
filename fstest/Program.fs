@@ -619,6 +619,14 @@ module Parser = begin
         with
             | ConcatenationFailed -> (failedToken s, [])
             | _ -> reraise ()
+
+    // --------
+    // Parse
+    let parse (str:string) =
+        let ((_, s, res), data) = xhfBlock str 0
+        if res && s = str.Length
+        then (true, data)
+        else (false, Data.BlockNull)
 end;;
 
 // --------
