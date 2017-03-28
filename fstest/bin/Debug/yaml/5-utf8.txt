@@ -1,0 +1,38 @@
+--- 
+- ~
+-
+  YATT_CONFIG: 
+    - namespace: 
+      - yatt
+      - perl
+      - 漢字
+  ONLY_UTF8: 1
+  encoding: utf8
+-
+  OUT: "<h2>Hello</h2>\n3 x 8 = 24\nworld!\n"
+  PARAM: 
+    - 3
+    - 8
+  IN: "<!yatt:args x y>\n<yatt:こんにちは x y/>world!\n\n<!yatt:widget こんにちは x y>\n<h2>Hello</h2>\n&perl:x; x &perl:y; = <?perl= $x * $y?>\n"
+  TITLE: Japanese tag
+-
+  OUT: "<h2>Hello</h2>\n3 x 8 = 24\nworld~~\n"
+  PARAM: 
+    - 3
+    - 8
+  IN: "<!漢字:args x y>\n<漢字:こんにちは x y/>world~~\n\n<!漢字:widget こんにちは x y>\n<h2>Hello</h2>\n&漢字:x; x &漢字:y; = <?漢字= $x * $y?>\n"
+  TITLE: Japanese ns
+-
+  OUT: "<h2>Hello</h2>\n3 x 8 = 24\n世界！\n"
+  PARAM: 
+    - 3
+    - 8
+  IN: "<!漢字:args x y>\n<漢字:こんにちは x y/>世界！\n\n<!漢字:widget こんにちは x y>\n<h2>Hello</h2>\n&漢字:x; x &漢字:y; = <?漢字= $x * $y?>\n"
+  TITLE: Japanese ns plus Japanese output
+-
+  OUT: "<h2>Hello</h2>\n3 x 8 = 24\nworld!\n"
+  PARAM: 
+    - 3
+    - 8
+  IN: "<!yatt:args x y>\n<yatt:hello 甲=x 乙=y/>world!\n\n<!yatt:widget hello 甲 乙>\n<h2>Hello</h2>\n&perl:甲; x &perl:乙; = <?perl= $甲 * $乙?>\n"
+  TITLE: Japanese entity

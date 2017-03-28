@@ -950,6 +950,23 @@ let printParser f (str:string) (s:int) =
 
 [<EntryPoint>]
 let main argv =
+    if argv.Length.Equals(1)
+    then
+        let arg = argv.[0]
+        if arg.[arg.Length - 4 .. arg.Length - 1].Equals(".xhf")
+        then
+            let outFileName = arg.[0 .. arg.Length - 5] + ".yaml"
+            printParser (
+                fun a b ->
+                    let temp = Parser.xhfBlock a b
+                    writeToFile outFileName (toYaml (snd temp))
+                    fst temp
+            ) (readFile arg) 0
+        else
+            ()
+    else
+        ()
+
     //printParser (
     //    fun a b ->
     //        let temp = Parser.xhfBlock a b
@@ -981,19 +998,20 @@ let main argv =
     //        writeToFile "yaml/7-foreach.txt" (toYaml (snd temp))
     //        fst temp
     //) (readFile "7-foreach.txt") 0
-
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            writeToFile "yaml/6-entpath.txt" (toYaml (snd temp))
-            fst temp
-    ) (readFile "6-entpath.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/6-entpath.txt" (toYaml (snd temp))
+    //        fst temp
+    //) (readFile "6-entpath.txt") 0
 
     //printParser (
     //    fun a b ->
     //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/5-utf8.txt" (toYaml (snd temp))
     //        fst temp
     //) (readFile "5-utf8.txt") 0
+
     //printParser (
     //    fun a b ->
     //        let temp = Parser.xhfBlock a b
@@ -1104,7 +1122,6 @@ let main argv =
     //        let temp = Parser.xhfBlock a b
     //        fst temp
     //) (readFile "basic_1_t_1-basic.txt") 0
-    //writeToFile "output.txt" "aaa\nbbb\nccc\n"
     //printParser (
     //    fun a b ->
     //        let temp = Parser.xhfBlock a b
