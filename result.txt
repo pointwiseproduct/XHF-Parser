@@ -1,0 +1,47 @@
+ogram.exe
+Unable to find image 'hkoba501/xhf-acceptance-inspection:latest' locally
+latest: Pulling from hkoba501/xhf-acceptance-inspection
+2bf01635e2a0: Pull complete 
+47beecc92749: Pull complete 
+554d4b8fd397: Pull complete 
+c09aff232872: Pull complete 
+21c44c69f704: Pull complete 
+16050fa54167: Pull complete 
+c0f23be7083f: Pull complete 
+082279904aa8: Pull complete 
+2a02d90437f7: Pull complete 
+3f0196fd670b: Pull complete 
+Digest: sha256:21ddd7f7d773ea9878d8836e886f4f3497ae3a02e2bde437e7de3f2b123cf0d9
+Status: Downloaded newer image for hkoba501/xhf-acceptance-inspection:latest
+1..31
+ok 1 - inputs/samples__basic__10__app.xhf
+ok 2 - inputs/samples__basic__10__t__1-basic.xhf
+ok 3 - inputs/samples__basic__11__t__1-basic.xhf
+ok 4 - inputs/samples__basic__12__t__1-basic.xhf
+ok 5 - inputs/samples__basic__13__t__1-mkhidden.xhf
+ok 6 - inputs/samples__basic__1__t__1-basic.xhf
+ok 7 - inputs/samples__basic__2__t__1-basic.xhf
+ok 8 - inputs/samples__basic__3__t__1-basic.xhf
+ok 9 - inputs/samples__basic__4__t__1-basic.xhf
+ok 10 - inputs/samples__basic__5__t__1-basic.xhf
+ok 11 - inputs/samples__basic__6__t__1-basic.xhf
+ok 12 - inputs/samples__basic__7__app.xhf
+ok 13 - inputs/samples__basic__7__t__1-basic.xhf
+ok 14 - inputs/samples__basic__8__t__1-basic.xhf
+ok 15 - inputs/samples__basic__9__t__1-basic.xhf
+ok 16 - inputs/samples__db_backed__1__t__1-basic.xhf
+ok 17 - inputs/samples__db_backed__1__t__basic.inc.xhf
+ok 18 - inputs/samples__db_backed__2__t__1-basic.xhf
+ok 19 - inputs/samples__sess_backed__1__t__1-basic.xhf
+ok 20 - inputs/samples__toy__toyedit1__t__1-basic.xhf
+ok 21 - inputs/samples__toy__toyedit1__t__2-utf8.xhf
+ok 22 - inputs/t__xhf__errdiag__1-static.xhf
+ok 23 - inputs/t__xhf__errdiag__2-runtime.xhf
+ok 24 - inputs/t__xhf__lite__1-basic.xhf
+ok 25 - inputs/t__xhf__lite__2-if.xhf
+ok 26 - inputs/t__xhf__lite__3-my.xhf
+ok 27 - inputs/t__xhf__lite__4-ent.xhf
+ok 28 - inputs/t__xhf__lite__5-utf8.xhf
+ok 29 - inputs/t__xhf__lite__6-entpath.xhf
+ok 30 - inputs/t__xhf__lite__7-foreach.xhf
+ok 31 - inputs/t__xhf__lite__8-newline.xhf
