@@ -1,0 +1,50 @@
+--- 
+- ~
+-
+  ERROR: "^Use of uninitialized value (?:\\$html_x )?in print at \\S+ line 2,"
+  PARAM: []
+
+  IN: "<!yatt:args x=html>\n&yatt:x;\n"
+  TITLE: var in toplevel
+-
+  ERROR: "^Use of uninitialized value (?:\\$html_x )?in print at \\S+ line 3,"
+  IN: "<yatt:foo/>\n<!yatt:widget foo x=html>\n&yatt:x;\n"
+  TITLE: var in widget
+-
+  ERROR: "^Use of uninitialized value (?:\\$html_x )?in print at \\S+ line 2,"
+  IN: "<yatt:foo>\n &yatt:x;\n</yatt:foo>\n\n<!yatt:widget foo body = [code x=html]>\n<yatt:body/>\n"
+  TITLE: var in body
+-
+  ERROR: "^Use of uninitialized value (?:\\$html_x )?in print at \\S+ line 3,"
+  IN: "<yatt:foo>\n<yatt:bar>\n&yatt:x;\n</yatt:bar>\n</yatt:foo>\n\n<!yatt:widget foo>\n<yatt:body/>\n<!yatt:widget bar body = [code x=html]>\n<yatt:body/>\n"
+  TITLE: var in nested body 
+-
+  ERROR: "^Use of uninitialized value (?:\\$html_x )?in print at \\S+ line 2,"
+  IN: "<yatt:foo>\n<?perl===&yatt:x;?>\n</yatt:foo>\n\n<!yatt:widget foo body = [code x=html]>\n<yatt:body/>\n"
+  TITLE: pi var in body
+-
+  ERROR: "^Use of uninitialized value (?:\\$html_x )?in print at \\S+ line 9,"
+  IN: "<!yatt:args>\n<yatt:foo a='\n\n\n' b=\"\n\n\n\" />\n<?perl===undef?>\n<!yatt:widget foo a b >\n"
+  TITLE: undef after long widget call.
+-
+  ERROR: "^Use of uninitialized value (?:\\$html_x )?in print at \\S+ line 5,"
+  IN: "<!yatt:args>\n<yatt:foo \n\n/>\n<?perl===undef?>\n<!yatt:widget foo a b >\n"
+  TITLE: undef after newlined widget call w/o body.
+-
+  PERL_MINVER: '5.012'
+  SKIP: Solved in perl-5.012
+  ERROR: "^Use of uninitialized value (?:\\$html_x )?in print at \\S+ line 5,"
+  IN: "<!yatt:args x=html>\n<yatt:foo\n\n>\n&yatt:x;\n</yatt:foo>\n<!yatt:widget foo a b >\n<yatt:body/>\n"
+  TITLE: var after newlined widget call with body.
+-
+  ERROR: "^Use of uninitialized value in print at \\S+ line 8,"
+  IN: "<yatt:y>\nfoo\nbar\nbaz\n</yatt:y>\nfoo\nbar\n<?perl===undef?>\n<!yatt:widget y>\n<h2>y</h2>\n<yatt:body/>\n"
+  TITLE: after element.
+-
+  ERROR: "^Use of uninitialized value in print at \\S+ line 5,"
+  IN: "<yatt:x>\nfoo\n<yatt:y/>\nbar\n<?perl===undef?>\nbaz\n</yatt:x>\n\n\n<!yatt:widget x>\n<yatt:body/>\n<!yatt:widget y>\n<h2>y</h2>\nfoo\nbar\nbaz\n"
+  TITLE: after empty element in body
+-
+  ERROR: "^Use of uninitialized value in print at \\S+ line 7,"
+  IN: "<yatt:x>\nfoo\n<yatt:y/>\nbar\nbaz\n</yatt:x>\n<?perl===undef?>\n\n<!yatt:widget x>\n<yatt:body/>\n<!yatt:widget y>\n<h2>y</h2>\nfoo\nbar\nbaz\n"
+  TITLE: after element with body

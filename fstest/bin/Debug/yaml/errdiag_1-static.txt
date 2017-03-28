@@ -1,0 +1,69 @@
+--- 
+- ~
+-
+  ERROR: "^Missing CLO\\(>\\) for: <yatt:envelope"
+  IN: "<yatt:envelope>\n  <yatt:foo />\n</yatt:envelope\n<!yatt:widget foo>\n"
+-
+  ERROR: "^TAG close without open! got </yatt:envelope>"
+  IN: "</yatt:envelope>\n<!yatt:widget foo>\n"
+-
+  ERROR: Missing close tag 'yatt:my' line 3
+  IN: "foo\n<yatt:my bar>\n"
+  TITLE: missing close tag
+-
+  ERROR: TAG Mismatch! <yatt:my> closed by </yatt:foreach> line 3,
+  IN: "foo\n<yatt:my bar>\n</yatt:foreach>\n"
+  TITLE: tag open/close mismatch
+-
+  ERROR: TAG Mismatch! <:yatt:y> closed by </:yatt:z> line 3,
+  IN: " <!yatt:widget foo x y>\n <yatt:foo x=\"foo\">\n   <:yatt:y>bar</:yatt:z>\n </yatt:foo>\n \n <!yatt:widget bar x y>\n barrr\n"
+  TITLE: mis-closed attribute element(name mismatch)
+-
+  ERROR: TAG Mismatch! <:yatt:y> closed by </yatt:y> line 3,
+  IN: " <!yatt:widget foo x y>\n <yatt:foo x=\"foo\">\n   <:yatt:y>bar</yatt:y>\n </yatt:foo>\n \n <!yatt:widget bar x y>\n barrr\n"
+  TITLE: mis-closed attribute element(':' mismatch)
+-
+  ERROR: "^No such variable 'x' at file \\S+ line 1,"
+  IN: "&yatt:x;\n"
+  TITLE: var in toplevel
+-
+  ERROR: "^No such variable 'x' at file \\S+ line 3,"
+  IN: "<yatt:foo/>\n<!yatt:widget foo>\n&yatt:x;\n"
+  TITLE: var in widget
+-
+  ERROR: "^No such variable 'y' at file \\S+ line 2,"
+  IN: "<yatt:foo>\n &yatt:y;\n</yatt:foo>\n\n<!yatt:widget foo body = [code x]>\n<yatt:body/>\n"
+  TITLE: var in body
+-
+  ERROR: "^No such variable 'z' at file \\S+ line 10,"
+  IN: "<!yatt:args x=value>\n<html>\n<body>\n<yatt:if if=\"&yatt:x; > 1\">\nfoo\nbar\nbaz\n</yatt:if>\nhoe\n&yatt:z;\nmoe\n"
+  TITLE: var after macro
+-
+  ERROR: "^No such entity in namespace \"\\w+::EntNS::\\w+\": unknown_entity"
+  IN: "&yatt:unknown_entity();\n"
+  TITLE: Unknown entity function name
+-
+  ERROR: "^Unknown type 'bar' for variable 'foo' at file \\S+ line 1,"
+  IN: "<!yatt:args foo=bar>\n<h2>&yatt:foo;</h2>\n"
+  TITLE: Unknown type
+-
+  ERROR: "^No such widget <yatt:x> at file \\S+ line 5,"
+  IN: "<yatt:y/>\nfoo\nbar\nbaz\n<yatt:x/>\nfoo\nbar\nbaz\n<yatt:y/>\nfoo\nbar\n<!yatt:widget y>\n<h2>y</h2>\n"
+  TITLE: empty element.
+-
+  ERROR: "^No such widget <yatt:x> at file \\S+ line 5,"
+  IN: "<yatt:y>\nfoo\nbar\nbaz\n<yatt:x/>\nfoo\nbar\nbaz\n</yatt:y>\n<!yatt:widget y>\n<h2>y</h2>\nfoo\n<yatt:body/>\nbar\nbaz\n"
+  TITLE: empty element in body
+-
+  ERROR: "^No such variable 'w' at file \\S+ line 6,"
+  IN: "<!yatt:args\n  x\n  y\n  z\n>\n&yatt:w;\n"
+  TITLE: after long declaration
+-
+  ERROR: "^No such variable 'z' at file \\S+ line 5,"
+  IN: "<yatt:foo\n  x=\"bar\"\n  y=\"baz\"\n/>\n&yatt:z;\n\n<!yatt:widget foo x y>\n<h2>foo</h2>\n"
+  TITLE: after long element
+-
+  ERROR: "^Can't parse entity_path group .*?, at file \\S+ line 1\\n$"
+  IN: "&yatt:array[func(x,:y)];\n"
+  SKIP: Changed
+  TITLE: entpath

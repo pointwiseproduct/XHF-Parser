@@ -3,7 +3,9 @@ open System.IO
 open System.Collections.Generic
 
 module Data = begin
-    type Block =
+    type XHF = Block list
+
+    and Block =
         | BlockNull
         | Block of Item list
 
@@ -14,22 +16,6 @@ module Data = begin
         | ItemDict of DictBlock
         | ItemArray of ArrayBlock
         | ItemSpecialExpr of SpecialExpr
-
-    and DictKey =
-        | DictKeyNull
-        | DictKeyFieldName of FieldName
-        | DictKeySingleText of SingleText
-        | DictKeyDict of DictBlock
-        | DictKeyArray of ArrayBlock
-        | DictKeySpecialExpr of SpecialExpr
-
-    and DictItem =
-        | DictItemNull
-        | DictItemFieldValue of FieldValue
-        | DictItemSingleText of SingleText
-        | DictItemDict of DictBlock
-        | DictItemArray of ArrayBlock
-        | DictItemSpecialExpr of SpecialExpr
 
     and FieldPair = 
         | FieldPairNull
@@ -53,11 +39,24 @@ module Data = begin
 
     and TextPayload =
         | TextPayloadNull
-        | Trimmed of string list
-        | Verbatim of string list
+        | Trimmed of string
+        | Verbatim of string
 
-    and TrimmedText = string list
-    and VerbatimText = string list
+    and DictKey =
+        | DictKeyNull
+        | DictKeyFieldName of FieldName
+        | DictKeySingleText of SingleText
+        | DictKeyDict of DictBlock
+        | DictKeyArray of ArrayBlock
+        | DictKeySpecialExpr of SpecialExpr
+
+    and DictItem =
+        | DictItemNull
+        | DictItemFieldValue of FieldValue
+        | DictItemSingleText of SingleText
+        | DictItemDict of DictBlock
+        | DictItemArray of ArrayBlock
+        | DictItemSpecialExpr of SpecialExpr
 
     and DictBlock = Dictionary<DictKey, DictItem>
     and ArrayBlock = Item list
@@ -237,6 +236,7 @@ module Parser = begin
         g()
 
     // --------
+    let isANY (ch:char) = true
     let isNL (ch:char) = if ch = '\n' then true else false
     let isNONNL (ch:char) = if ch = '\n' then false else true
     let isSPTAB (ch:char) = " \t".IndexOf ch >= 0
@@ -258,6 +258,7 @@ module Parser = begin
 
     let NL = matchOne isNL
     let NONNL = matchOne isNONNL
+    let ANY = matchOne isANY
     let SPTAB = matchOne isSPTAB
     let NAME = matchOne isNAME
 
@@ -344,12 +345,12 @@ module Parser = begin
     let partialText (str:string) (s:int) =
         if s >= str.Length then failedToken s else
         try
-        let mutable tx = ""
-        let (t, u, res) =
-            (str, s, s)
-            >-- (pls NONNL, (fun str -> tx <- str))
-            <-> ()
-        (tx, u, res)
+            let mutable tx = ""
+            let (t, u, res) =
+                (str, s, s)
+                >-- (pls NONNL, (fun str -> tx <- str))
+                <-> ()
+            (tx, u, res)
         with
             | ConcatenationFailed -> failedToken s
             | _ -> reraise ()
@@ -357,19 +358,19 @@ module Parser = begin
     // --------
     // trimmed-text
     let trimmedText (str:string) (s:int) =
-        if s >= str.Length then (failedToken s, Data.Trimmed []) else
+        if s >= str.Length then (failedToken s, Data.Trimmed "") else
         try
-        let mutable tx:string list = []
+        let mutable tx:string = ""
         let temp =
             (str, s, s)
             >>> SPTAB
             >>> (ast (existList [
-                evalAndProc partialText (fun str -> tx <- str :: tx);
+                evalAndProc partialText (fun str -> tx <- tx + str);
                 (fun a b ->
                     try
                         (a, b, b)
                         >>> NL
-                        >-- (SPTAB, (fun str -> tx <- ("\n" + str) :: tx))
+                        >-- (SPTAB, (fun str -> tx <- tx + "\n" + str))
                         <-> ()
                     with
                         | ConcatenationFailed -> failedToken b
@@ -377,39 +378,36 @@ module Parser = begin
                 )
             ]))
             <-> ()
-        (temp, Data.Trimmed (reverse tx))
+        (temp, Data.Trimmed tx)
         with
-            | ConcatenationFailed -> (failedToken s, Data.Trimmed [])
+            | ConcatenationFailed -> (failedToken s, Data.Trimmed "")
             | _ -> reraise ()
 
     // --------
     // verbatim-text
     let verbatimText (str:string) (s:int) =
-        if s >= str.Length then (failedToken s, Data.Verbatim []) else
+        if s >= str.Length then (failedToken s, Data.Verbatim "") else
         try
-        let mutable tx:string list = []
+        let mutable tx:string = ""
         let temp =
             (str, s, s)
             >>> NL
             >>> (ast (existList [
-                evalAndProc partialText (fun str ->
-                                            if str.[0] <> ' '
-                                            then tx <- str :: tx
-                                            else tx <- str.[1..(str.Length - 1)] :: tx);
+                evalAndProc partialText (fun str -> tx <- tx + str);
                 (fun a b ->
                     try
                         (a, b, b)
                         >>> NL
-                        >>> SPTAB
+                        >-- (SPTAB, (fun str -> tx <- tx + "\n"))
                         <-> ()
                     with
                         | ConcatenationFailed -> failedToken b
                         | _ -> reraise ())
             ]))
             <-> ()
-        (temp, Data.Verbatim (reverse tx))
+        (temp, Data.Verbatim (tx.[1..tx.Length - 1] + "\n"))
         with
-            | ConcatenationFailed -> (failedToken s, Data.Verbatim [])
+            | ConcatenationFailed -> (failedToken s, Data.Verbatim "")
             | _ -> reraise ()
 
     // --------
@@ -434,9 +432,10 @@ module Parser = begin
     // -------
     // xhfBlock
     let rec xhfBlock (str:string) (s:int) =
-        if s >= str.Length then (failedToken s, Data.BlockNull) else
+        if s >= str.Length then (failedToken s, []) else
         try
             let mutable i = s
+            let mutable xhf:Data.XHF = []
             let mutable block:Data.Item list = []
             let mutable temp:string * int * bool = ("", s, false)
             let rec g () =
@@ -450,15 +449,18 @@ module Parser = begin
                 then
                     let (su, ss, sb) =
                         (str, ts, ts)
-                        >>> pls NL
+                        >-- (pls NL, (fun _ -> if block <> [] then xhf <- xhf @ [Data.Block block]; block <- [] else ()))
                         <-> ()
                     i <- ss;
                     g ()
                 else temp <- (tu, ts, tb)
             g ()
-            (temp, Data.Block (reverse block))
+            if block <> []
+            then xhf <- xhf @ [Data.Block block]
+            else ()
+            (temp, xhf)
         with
-            | ConcatenationFailed -> (failedToken s, Data.BlockNull)
+            | ConcatenationFailed -> (failedToken s, [])
             | _ -> reraise ()
 
     // -------
@@ -626,7 +628,7 @@ module Parser = begin
         let ((_, s, res), data) = xhfBlock str 0
         if res && s = str.Length
         then (true, data)
-        else (false, Data.BlockNull)
+        else (false, [])
 end;;
 
 // --------
@@ -637,6 +639,304 @@ let readFile (path:string) =
     while not fileReader.EndOfStream do
         str <- str + fileReader.ReadLine() + "\n"
     str
+
+// --------
+let encodeString (str:string) =
+    let mutable i = 0
+    let mutable out:string = ""
+    let rec g () =
+        if i >= str.Length
+        then ()
+        else
+            let ch = str.[i]
+            i <- i + 1
+            if ch = '\n'
+            then out <- out + "\\n"; g ()
+            else out <- out + string ch; g ()
+    g ()
+    out
+
+//--------
+// 文字列がyattタグかどうか判定する
+let testYattTag (str:string) =
+    let yatt = "<!yatt:"
+    if str.Length >= yatt.Length && str.[0..yatt.Length - 1].Equals(yatt) && str.IndexOf("\n").Equals(-1)
+    then
+        true
+    else
+        false
+
+// --------
+// 文字列が整数かどうか判定する
+let parsingTestInteger (str:string) =
+    let mutable f = true
+    List.iter (fun (i:int) ->
+        f <- f && (
+            str.[i].Equals('0') || str.[i].Equals('1') || str.[i].Equals('2') ||
+            str.[i].Equals('3') || str.[i].Equals('4') || str.[i].Equals('5') ||
+            str.[i].Equals('6') || str.[i].Equals('7') || str.[i].Equals('8') ||
+            str.[i].Equals('9')))
+        [0..str.Length - 1]
+    f
+
+//--------
+// 文字列が実数かどうか判定する
+let parsingTestReal (str:string) =
+    let mutable c = 0
+    let mutable f = true
+    List.iter (fun (i:int) ->
+        match c with
+        | 0 ->
+            f <- f && (
+                str.[i].Equals('0') || str.[i].Equals('1') || str.[i].Equals('2') ||
+                str.[i].Equals('3') || str.[i].Equals('4') || str.[i].Equals('5') ||
+                str.[i].Equals('6') || str.[i].Equals('7') || str.[i].Equals('8') ||
+                str.[i].Equals('9'))
+            c <- c + 1
+        | 1 ->
+            f <- f && (
+                str.[i].Equals('0') || str.[i].Equals('1') || str.[i].Equals('2') ||
+                str.[i].Equals('3') || str.[i].Equals('4') || str.[i].Equals('5') ||
+                str.[i].Equals('6') || str.[i].Equals('7') || str.[i].Equals('8') ||
+                str.[i].Equals('9') || str.[i].Equals('.'))
+            if str.[i].Equals('.') then c <- c + 1 else ()
+        | 2 ->
+            f <- f && (
+                str.[i].Equals('0') || str.[i].Equals('1') || str.[i].Equals('2') ||
+                str.[i].Equals('3') || str.[i].Equals('4') || str.[i].Equals('5') ||
+                str.[i].Equals('6') || str.[i].Equals('7') || str.[i].Equals('8') ||
+                str.[i].Equals('9'))
+            c <- c + 1
+        | 3 ->
+            f <- f && (
+                str.[i].Equals('0') || str.[i].Equals('1') || str.[i].Equals('2') ||
+                str.[i].Equals('3') || str.[i].Equals('4') || str.[i].Equals('5') ||
+                str.[i].Equals('6') || str.[i].Equals('7') || str.[i].Equals('8') ||
+                str.[i].Equals('9'))
+        | _ -> raise (Exception())
+    ) [0..str.Length - 1]
+    f
+
+//--------
+// 文字列がバージョン番号かどうか判定する
+let parsingTestVersionNum (str:string) =
+    let mutable c = 0
+    let mutable f = true
+    List.iter (fun (i:int) ->
+        match c with
+        | 0 ->
+            f <- f && (
+                str.[i].Equals('0') || str.[i].Equals('1') || str.[i].Equals('2') ||
+                str.[i].Equals('3') || str.[i].Equals('4') || str.[i].Equals('5') ||
+                str.[i].Equals('6') || str.[i].Equals('7') || str.[i].Equals('8') ||
+                str.[i].Equals('9'))
+            c <- 1
+        | 1 ->
+            f <- f && (
+                str.[i].Equals('0') || str.[i].Equals('1') || str.[i].Equals('2') ||
+                str.[i].Equals('3') || str.[i].Equals('4') || str.[i].Equals('5') ||
+                str.[i].Equals('6') || str.[i].Equals('7') || str.[i].Equals('8') ||
+                str.[i].Equals('9') || str.[i].Equals('.'))
+            if str.[i].Equals('.') then c <- 0 else ()
+        | _ -> raise (Exception())
+    ) [0..str.Length - 1]
+    f
+
+// --------
+// ファイルに書き込む
+let writeToFile (path:string) (content:string) =
+    File.WriteAllText (path, content)
+
+exception ToYaml
+
+// --------
+// to yaml
+let toYaml (data:Data.XHF) =
+    let mutable str = ""
+    let mutable indent = 0
+    let rec outIndent (i:int) =
+        if i = 0 then () else str <- str + "  "; outIndent (i - 1)
+    let replaceStr (str:String) =
+        let mutable ret = ""
+        if testYattTag str
+        then ret <- str
+        else if parsingTestInteger str
+        then ret <- str
+        else if str.[str.Length - 1].Equals('\n') && (parsingTestInteger str.[0..str.Length - 2])
+        then ret <- "'" + str + "\n'"
+        else if parsingTestVersionNum str
+        then ret <- "'" + str + "'"
+        else
+            ret <- str.Replace("\\", "\\\\").Replace("\n", "\\n").Replace("\"", "\\\"")
+            if ret.IndexOf(':') >= 0 || ret.[0].Equals('^') || ret.IndexOf('\n') >= 0 || ret.IndexOf('\\') >= 0 then ret <- "\"" + ret + "\"" else ()
+        ret
+    let rec matchXHF (ts:Data.XHF) =
+        match ts with
+        | Data.BlockNull :: rest ->
+            outIndent indent
+            str <- str + "-\n"
+            indent <- indent + 1
+            matchXHF rest
+            indent <- indent - 1
+        | Data.Block itemList :: rest ->
+            outIndent indent
+            str <- str + "-\n"
+            indent <- indent + 1
+            matchItemList itemList
+            indent <- indent - 1
+            matchXHF rest
+        | [] -> ()
+    and matchItemList (ts:Data.Item list) =
+        match ts with
+        | a :: rest ->
+            outIndent indent
+            matchItem a
+            matchItemList rest
+        | [] -> ()
+    and matchItem (data:Data.Item) =
+        match data with
+        | Data.ItemFieldPair a ->
+            matchFieldPairInList a
+        | Data.ItemSingleText a ->
+            matchTextPayload a
+        | Data.ItemDict a ->
+            matchDict a
+        | Data.ItemArray a ->
+            matchArray a
+        | Data.ItemSpecialExpr a ->
+            matchSpecialExpr a
+        | _ -> raise ToYaml
+    and matchFieldPairInList (data:Data.FieldPair) =
+        match data with
+        | Data.FieldPair (name, ts) ->
+            matchFieldNameInList name
+            str <- str + ": "
+            matchFieldValueInList ts
+        | _ -> raise ToYaml
+    and matchFieldNameInList (name:Data.FieldName) =
+        match name with
+        | Data.FieldName (name, []) ->
+            str <- str + name
+        | Data.FieldName (name, ts) ->
+            let listProc (ss:Data.FieldSubscript list) = 
+                match ss with
+                | Data.FieldSubscript s :: rest -> str <- str + s + ", ";
+                | []        -> str <- str.[0..str.Length - 3]
+            str <- str + "- " + name + "[";
+            listProc ts
+            str <- str + "]\n"
+        | _ -> raise ToYaml
+    and matchFieldValueInList (data:Data.FieldValue) =
+        match data with
+        | Data.FieldTextPayload a ->
+            matchTextPayload a;
+        | Data.FieldDict a ->
+            matchDict a;
+        | Data.FieldArray a ->
+            matchArray a;
+        | Data.FieldSpecial a ->
+            matchSpecialExpr a;
+        | _ -> raise ToYaml
+    and matchFieldPairInDict (data:Data.FieldPair) =
+        match data with
+        | Data.FieldPair (name, ts) ->
+            matchFieldNameInDict name;
+            indent <- indent + 1;
+            matchFieldValueInDict ts;
+            indent <- indent - 1
+        | _ -> raise ToYaml
+    and matchFieldNameInDict (name:Data.FieldName) =
+        match name with
+        | Data.FieldName (name, []) ->
+            str <- str + name + ": ";
+        | Data.FieldName (name, ts) ->
+            let listProc (ss:Data.FieldSubscript list) = 
+                match ss with
+                | Data.FieldSubscript s :: rest -> str <- str + s + ", ";
+                | []        -> str <- str.[0..str.Length - 3]
+            str <- str + name + "[";
+            listProc ts
+            str <- str + "]: "
+        | _ -> raise ToYaml
+    and matchFieldValueInDict (data:Data.FieldValue) =
+        match data with
+        | Data.FieldTextPayload a ->
+            matchTextPayload a;
+        | Data.FieldDict a ->
+            matchDict a;
+        | Data.FieldArray a ->
+            matchArray a;
+        | Data.FieldSpecial a ->
+            matchSpecialExpr a;
+        | _ -> raise ToYaml
+    and matchTextPayload (text:Data.TextPayload) =
+        match text with
+        | Data.Trimmed s  -> str <- str + (replaceStr s)
+        | Data.Verbatim s -> str <- str + (replaceStr s)
+        | _ -> raise ToYaml
+        str <- str + "\n"
+    and matchDict (data:Data.DictBlock) =
+        let rec matchDictList (ts:(Data.DictKey * Data.DictItem) list) =
+            match ts with
+            | (a, b) :: rest ->
+                str <- str + "\n"
+                indent <- indent + 1
+                outIndent indent
+                matchDictKey a
+                matchDictItem b
+                indent <- indent - 1
+                matchDictList rest
+            | [] -> ()
+        matchDictList (Seq.toList (Seq.zip data.Keys data.Values))
+    and matchDictKey (data:Data.DictKey) =
+        match data with
+        | Data.DictKeyNull -> raise ToYaml
+        | Data.DictKeyFieldName a ->
+            matchFieldNameInDict a
+        | Data.DictKeySingleText a ->
+            matchTextPayload a
+        | Data.DictKeyDict a ->
+            matchDict a
+        | Data.DictKeyArray a ->
+            matchArray a
+        | Data.DictKeySpecialExpr a ->
+            matchSpecialExpr a
+    and matchDictItem (data:Data.DictItem) =
+        match data with
+        | Data.DictItemNull -> raise ToYaml
+        | Data.DictItemFieldValue a ->
+            matchFieldValueInDict a
+        | Data.DictItemSingleText a ->
+            matchTextPayload a
+        | Data.DictItemDict a ->
+            matchDict a
+        | Data.DictItemArray a ->
+            matchArray a
+        | Data.DictItemSpecialExpr a ->
+            matchSpecialExpr a
+    and matchArray (data:Data.ArrayBlock) =
+        if data.Length.Equals(0)
+        then
+            str <- str + "[]\n\n"
+        else
+            str <- str + "\n"
+            indent <- indent + 1
+            let rec f (l:Data.ArrayBlock) =
+                match l with
+                | a :: tail ->
+                    outIndent indent
+                    str <- str + "- "
+                    matchItem a
+                    f tail
+                | [] -> ()
+            f data
+            indent <- indent - 1
+    and matchSpecialExpr (data:Data.KnownSpecials) =
+        str <- data
+    matchXHF data;
+    str <- "--- \n- ~\n" + str
+    str
+
 
 // --------
 let printParser f (str:string) (s:int) =
@@ -650,149 +950,164 @@ let printParser f (str:string) (s:int) =
 
 [<EntryPoint>]
 let main argv =
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/debug.txt" (toYaml (snd temp))
+    //        fst temp
+    //) (readFile "debug.txt") 0
+
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/errdiag_1-static.txt" (toYaml (snd temp))
+    //        fst temp
+    //) (readFile "errdiag_1-static.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/errdiag_2-runtime.txt" (toYaml (snd temp))
+    //        fst temp
+    //) (readFile "errdiag_2-runtime.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/8-newline.txt" (toYaml (snd temp))
+    //        fst temp
+    //) (readFile "8-newline.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/7-foreach.txt" (toYaml (snd temp))
+    //        fst temp
+    //) (readFile "7-foreach.txt") 0
+
     printParser (
         fun a b ->
             let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "errdiag_1-static.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "errdiag_2-runtime.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "8-newline.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "7-foreach.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
+            writeToFile "yaml/6-entpath.txt" (toYaml (snd temp))
             fst temp
     ) (readFile "6-entpath.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "5-utf8.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "4-ent.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "3-my.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "2-if.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "db_backed_2_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "db_backed_1_t_basic.inc.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "db_backed_1_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "basic_13_t_1-mkhidden.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "basic_12_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "basic_11_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "basic_10-app.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "basic_10_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "basic_9_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "basic_8_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "basic_7_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "basic_7-app.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "basic_6_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "basic_5_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "basic_4_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "basic_3_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "basic_2_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "basic_1_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            fst temp
-    ) (readFile "xhf-test.txt") 0
+
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "5-utf8.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "4-ent.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "3-my.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "2-if.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "db_backed_2_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "db_backed_1_t_basic.inc.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "db_backed_1_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "basic_13_t_1-mkhidden.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "basic_12_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "basic_11_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "basic_10-app.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "basic_10_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "basic_9_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "basic_8_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "basic_7_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "basic_7-app.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "basic_6_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "basic_5_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "basic_4_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "basic_3_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "basic_2_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "basic_1_t_1-basic.txt") 0
+    //writeToFile "output.txt" "aaa\nbbb\nccc\n"
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        fst temp
+    //) (readFile "xhf-test.txt") 0
     0 // 整数の終了コードを返します

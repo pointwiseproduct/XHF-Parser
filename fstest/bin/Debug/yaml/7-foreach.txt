@@ -1,0 +1,52 @@
+--- 
+- ~
+-
+  OUT: "<ul>\n<li>1</li>\n<li>2</li>\n<li>3</li>\n</ul>\n"
+  PARAM: 
+    - 
+      - 1
+      - 2
+      - 3
+  IN: "<ul>\n<yatt:foreach my=i \"1..3\"><li>&yatt:i;</li>\n</yatt:foreach></ul>\n"
+  TITLE: foreach
+-
+  OUT: "<ul>\n<li>1</li>\n<li>2</li>\n<li>3</li>\n</ul>\n"
+  PARAM: 
+    - 
+      - 1
+      - 2
+      - 3
+  IN: "<!yatt:args x=list>\n<ul>\n<yatt:foreach my=i list=x><li>&yatt:i;</li>\n</yatt:foreach></ul>\n"
+  TITLE: foreach list=x pass through
+-
+  OUT: "<ul>\n<li>1</li>\n<li>2</li>\n<li>3</li>\n</ul>\n"
+  PARAM: 
+    - 
+      - 1
+      - 2
+      - 3
+  IN: "<!yatt:args list=list>\n<ul>\n<yatt:foreach my=i list><li>&yatt:i;</li>\n</yatt:foreach></ul>\n"
+  TITLE: foreach list pass through
+-
+  ERROR: "^yatt:foreach - x should be list type"
+  IN: "<!yatt:args x>\n<ul>\n<yatt:foreach my=i list=x><li>&yatt:i;</li>\n</yatt:foreach></ul>\n"
+  TITLE: foreach list pass through, type mismatch.
+-
+  OUT: "<ul>\n<li>1</li>\n<li>2</li>\n<li>3</li>\n</ul>\n"
+  PARAM: 
+    - 
+      - 1
+      - 2
+      - 3
+  IN: "<!yatt:args list=list>\n<ul>\n<yatt:foreach list><li>&yatt:_;</li>\n</yatt:foreach></ul>\n"
+  TITLE: foreach $_
+-
+  OUT: "<li>1 = a</li>\n<li>2 = b1</li>\n<li>3 = b2</li>\n<li>4 = c</li>\n"
+  PARAM: 
+    - 
+      - a
+      - b1
+      - b2
+      - c
+  IN: "<!yatt:args list=list>\n<yatt:foreach my=val nth=i list><li>&yatt:i; = &yatt:val;</li>\n</yatt:foreach>\n"
+  TITLE: foreach nth=i

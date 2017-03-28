@@ -1,0 +1,130 @@
+--- 
+- ~
+-
+  YATT_RC: "Entity sum => sub {\n  my ($pack, @args) = @_;\n  my $sum = 0;\n  $sum += $_ for @args;\n  $sum;\n};\n\nEntity new => sub {\n  my ($pack, @args) = @_;\n  bless [@args], $pack;\n};\n\nsub foo {\n  my $self = shift;\n  my $mul = 1;\n  foreach my $i (@$self, @_) {\n    $mul *= $i;\n  }\n  $mul\n}\n"
+  YATT_CONFIG: 
+    - special_entities: 
+      - sum
+-
+  OUT: '12
+
+'
+  IN: "&yatt:sum(3,4,5);\n"
+  TITLE: "&yatt:sum(3,4,5);"
+-
+  OUT: '11
+
+'
+  IN: "&sum(3,8);\n"
+  TITLE: &sum();
+-
+  OUT: "baz\n"
+  PARAM: 
+    - 
+      foo: 
+        bar: baz
+    - bar
+  IN: "<!yatt:args x=scalar y>\n&yatt:x{foo}{:y};\n"
+  TITLE: hashref
+-
+  OUT: '4
+
+'
+  PARAM: 
+    - 
+      - 3
+      - 4
+      - 5
+    - 1
+  IN: "<!yatt:args x=list y=scalar>\n&yatt:x[:y];\n"
+  TITLE: aref with var index
+-
+  OUT: '6
+
+'
+  PARAM: 
+    - 
+      - 3
+      - 4
+      - 5
+      - 6
+  IN: "<!yatt:args x=list >\n&yatt:x[:sum(0,1,2)];\n"
+  TITLE: aref with call index
+-
+  OUT: "o\n"
+  PARAM: 
+    - 
+      - 
+        - X
+        - 
+          - x
+          - o
+          - y
+    - 1
+  IN: "<!yatt:args x=list y=scalar>\n&yatt:x[0][:y][1];\n"
+  TITLE: aref nest
+-
+  OUT: "O\n"
+  PARAM: 
+    - 
+      - 3
+      - 
+        - X
+        - O
+      - 5
+    - 
+      - 
+        - 2
+        - 1
+        - 0
+    - 1
+  IN: "<!yatt:args x=list y=list z=scalar>\n&yatt:x[:y[0][:z]][1];\n"
+  TITLE: aref with path index
+-
+  ERROR: "Syntax error in entity: ':x\\[0\\]\\[0\\]\\]\\[0\\];'"
+  PARAM: 
+    - 
+      - []
+
+  IN: "<!yatt:args x=list y=scalar>\n&yatt:x[0][0]][0];\n"
+  TITLE: parse error (aref)
+-
+  OUT: "['3']\n"
+  IN: "&yatt:HTML(:dump([3]));\n"
+  TITLE: array literal
+-
+  OUT: '3
+
+'
+  IN: "&yatt:HTML([=3][0]);\n"
+  TITLE: array literal and aref
+-
+  OUT: "yes\n"
+  PARAM: 
+    - 
+      - 1
+      - 0
+  IN: "<!yatt:args list=list>\n&yatt:if(=$$list[0]or$$list[1],yes,no);\n"
+  TITLE: "expr: or"
+-
+  OUT: "yes\n"
+  PARAM: 
+    - 
+      - 3
+      - 8
+  IN: "<!yatt:args list=list>\n&yatt:if(=$$list[0]*$$list[1]==24,yes,no);\n"
+  TITLE: "expr: =="
+-
+  OUT: "yes\n"
+  PARAM: 
+    - 
+      - 3
+      - 8
+  IN: "<!yatt:args list=list>\n&yatt:if(=($$list[0]+$$list[1])==11,yes,no);\n"
+  TITLE: "expr: (..)"
+-
+  OUT: '345678
+
+'
+  IN: "<yatt:my var:list=\"3..8\"/>\n&yatt:HTML(=@$var);\n"
+  TITLE: "expr: @var"

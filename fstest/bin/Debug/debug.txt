@@ -1,0 +1,10 @@
+# -*- coding: utf-8 -*-
+
+PARAM[
+{
+foo{
+bar: baz
+}
+}
+- bar
+]
