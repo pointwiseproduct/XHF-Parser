@@ -764,11 +764,11 @@ let toYaml (data:Data.XHF) =
         then ret <- str
         else if str.[str.Length - 1].Equals('\n') && (parsingTestInteger str.[0..str.Length - 2])
         then ret <- "'" + str + "\n'"
-        else if parsingTestVersionNum str
+        else if parsingTestVersionNum str || str.Equals("~")
         then ret <- "'" + str + "'"
         else
             ret <- str.Replace("\\", "\\\\").Replace("\n", "\\n").Replace("\"", "\\\"")
-            if ret.IndexOf(':') >= 0 || ret.[0].Equals('^') || ret.IndexOf('\n') >= 0 || ret.IndexOf('\\') >= 0 then ret <- "\"" + ret + "\"" else ()
+            if ret.IndexOf('!') >= 0 || ret.IndexOf(':') >= 0 || ret.[0].Equals('^') || ret.IndexOf('\n') >= 0 || ret.IndexOf('\\') >= 0 then ret <- "\"" + ret + "\"" else ()
         ret
     let rec matchXHF (ts:Data.XHF) =
         match ts with
