@@ -955,13 +955,9 @@ let main argv =
         let arg = argv.[0]
         if arg.[arg.Length - 4 .. arg.Length - 1].Equals(".xhf")
         then
-            let outFileName = arg.[0 .. arg.Length - 5] + ".yaml"
-            printParser (
-                fun a b ->
-                    let temp = Parser.xhfBlock a b
-                    writeToFile outFileName (toYaml (snd temp))
-                    fst temp
-            ) (readFile arg) 0
+            let temp = Parser.xhfBlock (readFile arg) 0
+            printfn "%s" (toYaml (snd temp))
+            ()
         else
             ()
     else
