@@ -1,0 +1,5 @@
+?? Program.exe
+?? input_output
+?? result_of_fstest.txt
+?? result_of_git_status_su.txt
+?? result_of_xhf2yaml.pl.txt

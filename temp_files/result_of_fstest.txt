@@ -1,0 +1,124 @@
+1..31
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__basic__10__app.xhf...
+ok 1 - inputs/samples__basic__10__app.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__basic__10__t__1-basic.xhf...
+ok 2 - inputs/samples__basic__10__t__1-basic.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__basic__11__t__1-basic.xhf...
+ok 3 - inputs/samples__basic__11__t__1-basic.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__basic__12__t__1-basic.xhf...
+ok 4 - inputs/samples__basic__12__t__1-basic.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__basic__13__t__1-mkhidden.xhf...
+ok 5 - inputs/samples__basic__13__t__1-mkhidden.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__basic__1__t__1-basic.xhf...
+ok 6 - inputs/samples__basic__1__t__1-basic.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__basic__2__t__1-basic.xhf...
+ok 7 - inputs/samples__basic__2__t__1-basic.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__basic__3__t__1-basic.xhf...
+ok 8 - inputs/samples__basic__3__t__1-basic.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__basic__4__t__1-basic.xhf...
+ok 9 - inputs/samples__basic__4__t__1-basic.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__basic__5__t__1-basic.xhf...
+ok 10 - inputs/samples__basic__5__t__1-basic.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__basic__6__t__1-basic.xhf...
+ok 11 - inputs/samples__basic__6__t__1-basic.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__basic__7__app.xhf...
+ok 12 - inputs/samples__basic__7__app.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__basic__7__t__1-basic.xhf...
+ok 13 - inputs/samples__basic__7__t__1-basic.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__basic__8__t__1-basic.xhf...
+not ok 14 - inputs/samples__basic__8__t__1-basic.xhf
+#   Failed test 'inputs/samples__basic__8__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x185ac28)
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__basic__9__t__1-basic.xhf...
+not ok 15 - inputs/samples__basic__9__t__1-basic.xhf
+#   Failed test 'inputs/samples__basic__9__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x18555e8)
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__db_backed__1__t__1-basic.xhf...
+not ok 16 - inputs/samples__db_backed__1__t__1-basic.xhf
+#   Failed test 'inputs/samples__db_backed__1__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got->[0] = undef
+#     $expected->[0] = HASH(0x17b34f0)
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__db_backed__1__t__basic.inc.xhf...
+not ok 17 - inputs/samples__db_backed__1__t__basic.inc.xhf
+#   Failed test 'inputs/samples__db_backed__1__t__basic.inc.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x185c320)
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__db_backed__2__t__1-basic.xhf...
+not ok 18 - inputs/samples__db_backed__2__t__1-basic.xhf
+#   Failed test 'inputs/samples__db_backed__2__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got->[0] = undef
+#     $expected->[0] = HASH(0x185cb18)
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__sess_backed__1__t__1-basic.xhf...
+not ok 19 - inputs/samples__sess_backed__1__t__1-basic.xhf
+#   Failed test 'inputs/samples__sess_backed__1__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got->[0] = undef
+#     $expected->[0] = HASH(0x185e690)
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__toy__toyedit1__t__1-basic.xhf...
+ok 20 - inputs/samples__toy__toyedit1__t__1-basic.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/samples__toy__toyedit1__t__2-utf8.xhf...
+ok 21 - inputs/samples__toy__toyedit1__t__2-utf8.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/t__xhf__errdiag__1-static.xhf...
+ok 22 - inputs/t__xhf__errdiag__1-static.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/t__xhf__errdiag__2-runtime.xhf...
+not ok 23 - inputs/t__xhf__errdiag__2-runtime.xhf
+#   Failed test 'inputs/t__xhf__errdiag__2-runtime.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x185ecc0)
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/t__xhf__lite__1-basic.xhf...
+not ok 24 - inputs/t__xhf__lite__1-basic.xhf
+#   Failed test 'inputs/t__xhf__lite__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1883b40)
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/t__xhf__lite__2-if.xhf...
+ok 25 - inputs/t__xhf__lite__2-if.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/t__xhf__lite__3-my.xhf...
+not ok 26 - inputs/t__xhf__lite__3-my.xhf
+#   Failed test 'inputs/t__xhf__lite__3-my.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x18771a8)
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/t__xhf__lite__4-ent.xhf...
+not ok 27 - inputs/t__xhf__lite__4-ent.xhf
+#   Failed test 'inputs/t__xhf__lite__4-ent.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got->[0] = undef
+#     $expected->[0] = HASH(0x187c1e0)
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/t__xhf__lite__5-utf8.xhf...
+not ok 28 - inputs/t__xhf__lite__5-utf8.xhf
+#   Failed test 'inputs/t__xhf__lite__5-utf8.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x187cdf8)
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/t__xhf__lite__6-entpath.xhf...
+not ok 29 - inputs/t__xhf__lite__6-entpath.xhf
+#   Failed test 'inputs/t__xhf__lite__6-entpath.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got->[0] = undef
+#     $expected->[0] = HASH(0x185a9a0)
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/t__xhf__lite__7-foreach.xhf...
+ok 30 - inputs/t__xhf__lite__7-foreach.xhf
+# Running mono /home/user/xhf-acceptance-inspection/Program.exe /tester/inputs/t__xhf__lite__8-newline.xhf...
+ok 31 - inputs/t__xhf__lite__8-newline.xhf
+# Looks like you failed 12 tests of 31.

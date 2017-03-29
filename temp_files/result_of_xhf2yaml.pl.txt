@@ -1,0 +1,281 @@
+1..31
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__basic__10__app.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 1 - inputs/samples__basic__10__app.xhf
+#   Failed test 'inputs/samples__basic__10__app.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1b875c0)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__basic__10__t__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 2 - inputs/samples__basic__10__t__1-basic.xhf
+#   Failed test 'inputs/samples__basic__10__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c29928)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__basic__11__t__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 3 - inputs/samples__basic__11__t__1-basic.xhf
+#   Failed test 'inputs/samples__basic__11__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1a01660)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__basic__12__t__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 4 - inputs/samples__basic__12__t__1-basic.xhf
+#   Failed test 'inputs/samples__basic__12__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c29778)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__basic__13__t__1-mkhidden.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 5 - inputs/samples__basic__13__t__1-mkhidden.xhf
+#   Failed test 'inputs/samples__basic__13__t__1-mkhidden.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c299d0)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__basic__1__t__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 6 - inputs/samples__basic__1__t__1-basic.xhf
+#   Failed test 'inputs/samples__basic__1__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c34090)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__basic__2__t__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 7 - inputs/samples__basic__2__t__1-basic.xhf
+#   Failed test 'inputs/samples__basic__2__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c34048)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__basic__3__t__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 8 - inputs/samples__basic__3__t__1-basic.xhf
+#   Failed test 'inputs/samples__basic__3__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c29a60)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__basic__4__t__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 9 - inputs/samples__basic__4__t__1-basic.xhf
+#   Failed test 'inputs/samples__basic__4__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c342d0)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__basic__5__t__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 10 - inputs/samples__basic__5__t__1-basic.xhf
+#   Failed test 'inputs/samples__basic__5__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c29c40)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__basic__6__t__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 11 - inputs/samples__basic__6__t__1-basic.xhf
+#   Failed test 'inputs/samples__basic__6__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c29bb0)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__basic__7__app.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 12 - inputs/samples__basic__7__app.xhf
+#   Failed test 'inputs/samples__basic__7__app.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c29a60)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__basic__7__t__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 13 - inputs/samples__basic__7__t__1-basic.xhf
+#   Failed test 'inputs/samples__basic__7__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c37e98)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__basic__8__t__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 14 - inputs/samples__basic__8__t__1-basic.xhf
+#   Failed test 'inputs/samples__basic__8__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c342b8)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__basic__9__t__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 15 - inputs/samples__basic__9__t__1-basic.xhf
+#   Failed test 'inputs/samples__basic__9__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c37ef8)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__db_backed__1__t__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 16 - inputs/samples__db_backed__1__t__1-basic.xhf
+#   Failed test 'inputs/samples__db_backed__1__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c347f8)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__db_backed__1__t__basic.inc.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 17 - inputs/samples__db_backed__1__t__basic.inc.xhf
+#   Failed test 'inputs/samples__db_backed__1__t__basic.inc.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c34480)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__db_backed__2__t__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 18 - inputs/samples__db_backed__2__t__1-basic.xhf
+#   Failed test 'inputs/samples__db_backed__2__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c29628)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__sess_backed__1__t__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 19 - inputs/samples__sess_backed__1__t__1-basic.xhf
+#   Failed test 'inputs/samples__sess_backed__1__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c38180)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__toy__toyedit1__t__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 20 - inputs/samples__toy__toyedit1__t__1-basic.xhf
+#   Failed test 'inputs/samples__toy__toyedit1__t__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c34798)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/samples__toy__toyedit1__t__2-utf8.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 21 - inputs/samples__toy__toyedit1__t__2-utf8.xhf
+#   Failed test 'inputs/samples__toy__toyedit1__t__2-utf8.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c34168)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/t__xhf__errdiag__1-static.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 22 - inputs/t__xhf__errdiag__1-static.xhf
+#   Failed test 'inputs/t__xhf__errdiag__1-static.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c37d18)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/t__xhf__errdiag__2-runtime.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 23 - inputs/t__xhf__errdiag__2-runtime.xhf
+#   Failed test 'inputs/t__xhf__errdiag__2-runtime.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c34648)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/t__xhf__lite__1-basic.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 24 - inputs/t__xhf__lite__1-basic.xhf
+#   Failed test 'inputs/t__xhf__lite__1-basic.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c4fe70)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/t__xhf__lite__2-if.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 25 - inputs/t__xhf__lite__2-if.xhf
+#   Failed test 'inputs/t__xhf__lite__2-if.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c50110)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/t__xhf__lite__3-my.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 26 - inputs/t__xhf__lite__3-my.xhf
+#   Failed test 'inputs/t__xhf__lite__3-my.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c3ffc0)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/t__xhf__lite__4-ent.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 27 - inputs/t__xhf__lite__4-ent.xhf
+#   Failed test 'inputs/t__xhf__lite__4-ent.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c38948)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/t__xhf__lite__5-utf8.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 28 - inputs/t__xhf__lite__5-utf8.xhf
+#   Failed test 'inputs/t__xhf__lite__5-utf8.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c50200)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/t__xhf__lite__6-entpath.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 29 - inputs/t__xhf__lite__6-entpath.xhf
+#   Failed test 'inputs/t__xhf__lite__6-entpath.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c40830)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/t__xhf__lite__7-foreach.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 30 - inputs/t__xhf__lite__7-foreach.xhf
+#   Failed test 'inputs/t__xhf__lite__7-foreach.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c40170)
+# Running /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl /tester/inputs/t__xhf__lite__8-newline.xhf...
+Can't locate YATT/Lite/XHF.pm in @INC (you may need to install the YATT::Lite::XHF module) (@INC contains: /home/user/xhf-acceptance-inspection/expected/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+BEGIN failed--compilation aborted at /home/user/xhf-acceptance-inspection/expected/xhf2yaml.pl line 13.
+not ok 31 - inputs/t__xhf__lite__8-newline.xhf
+#   Failed test 'inputs/t__xhf__lite__8-newline.xhf'
+#   at /tester/tester.t line 62.
+#     Structures begin differing at:
+#          $got = undef
+#     $expected = ARRAY(0x1c37d90)
+# Looks like you failed 31 tests of 31.
