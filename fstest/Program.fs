@@ -955,8 +955,16 @@ let toYaml (data:Data.XHF) =
         | _ -> raise ToYaml
     and matchSpecialExpr (data:Data.KnownSpecials) =
         str <- data
+    let countNewLine (str:string) =
+        let mutable i:int = 0
+        String.iter (fun c -> if c.Equals('\n') then i <- i + 1 else ()) str
+        i
     matchXHF data;
-    str <- "--- \n- ~\n" + str
+    if (countNewLine str) <= 1
+    then
+        str <- "--- \n" + str
+    else
+        str <- "--- \n- ~\n" + str
     str
 
 
@@ -974,7 +982,6 @@ let printParser f (str:string) (s:int) =
 let main argv =
     let temp = Parser.xhfBlock (readFile argv.[0]) 0
     printfn "%s" (toYaml (snd temp))
-    ()
 
 //samples__basic__10__app.xhf
 //samples__basic__10__t__1-basic.xhf
@@ -1112,6 +1119,7 @@ let main argv =
     //printParser (
     //    fun a b ->
     //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/basic_7-app.txt" (toYaml (snd temp))
     //        fst temp
     //) (readFile "basic_7-app.txt") 0
     //printParser (
