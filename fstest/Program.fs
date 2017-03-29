@@ -774,13 +774,13 @@ let toYaml (data:Data.XHF) =
         match ts with
         | Data.BlockNull :: rest ->
             outIndent indent
-            str <- str + "-\n"
+            str <- str + "- \n"
             indent <- indent + 1
             matchXHF rest
             indent <- indent - 1
         | Data.Block itemList :: rest ->
             outIndent indent
-            str <- str + "-\n"
+            str <- str + "- \n"
             indent <- indent + 1
             matchItemList itemList
             indent <- indent - 1
