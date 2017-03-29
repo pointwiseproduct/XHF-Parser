@@ -972,18 +972,9 @@ let printParser f (str:string) (s:int) =
 
 [<EntryPoint>]
 let main argv =
-    //if argv.Length.Equals(1)
-    //then
-    //    let arg = argv.[0]
-    //    if arg.[arg.Length - 4 .. arg.Length - 1].Equals(".xhf")
-    //    then
-    //        let temp = Parser.xhfBlock (readFile arg) 0
-    //        printfn "%s" (toYaml (snd temp))
-    //        ()
-    //    else
-    //        ()
-    //else
-    //    ()
+    let temp = Parser.xhfBlock (readFile argv.[0]) 0
+    printfn "%s" (toYaml (snd temp))
+    ()
 
 //samples__basic__10__app.xhf
 //samples__basic__10__t__1-basic.xhf
@@ -995,12 +986,12 @@ let main argv =
 //samples__absic__7__t__1-basic.xhf
 
 
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            writeToFile "yaml/debug.txt" (toYaml (snd temp))
-            fst temp
-    ) (readFile "debug.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/debug.txt" (toYaml (snd temp))
+    //        fst temp
+    //) (readFile "debug.txt") 0
     //printParser (
     //    fun a b ->
     //        let temp = Parser.xhfBlock a b
@@ -1088,19 +1079,19 @@ let main argv =
     //        fst temp
     //) (readFile "basic_11_t_1-basic.txt") 0
 
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            writeToFile "yaml/basic_10-app.txt" (toYaml (snd temp))
-            fst temp
-    ) (readFile "basic_10-app.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/basic_10-app.txt" (toYaml (snd temp))
+    //        fst temp
+    //) (readFile "basic_10-app.txt") 0
 
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            writeToFile "yaml/basic_10_t_1-app.txt" (toYaml (snd temp))
-            fst temp
-    ) (readFile "basic_10_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/basic_10_t_1-app.txt" (toYaml (snd temp))
+    //        fst temp
+    //) (readFile "basic_10_t_1-basic.txt") 0
 
     //printParser (
     //    fun a b ->
@@ -1112,12 +1103,12 @@ let main argv =
     //        let temp = Parser.xhfBlock a b
     //        fst temp
     //) (readFile "basic_8_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            writeToFile "yaml/basic_7_t_1-basic.txt" (toYaml (snd temp))
-            fst temp
-    ) (readFile "basic_7_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/basic_7_t_1-basic.txt" (toYaml (snd temp))
+    //        fst temp
+    //) (readFile "basic_7_t_1-basic.txt") 0
     //printParser (
     //    fun a b ->
     //        let temp = Parser.xhfBlock a b
@@ -1128,36 +1119,36 @@ let main argv =
     //        let temp = Parser.xhfBlock a b
     //        fst temp
     //) (readFile "basic_6_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            writeToFile "yaml/basic_5_t_1-basic.txt" (toYaml (snd temp))
-            fst temp
-    ) (readFile "basic_5_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            writeToFile "yaml/basic_4_t_1-basic.txt" (toYaml (snd temp))
-            fst temp
-    ) (readFile "basic_4_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            writeToFile "yaml/basic_3_t_1-basic.txt" (toYaml (snd temp))
-            fst temp
-    ) (readFile "basic_3_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            writeToFile "yaml/basic_2_t_1-basic.txt" (toYaml (snd temp))
-            fst temp
-    ) (readFile "basic_2_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            writeToFile "yaml/basic_1_t_1-basic.txt" (toYaml (snd temp))
-            fst temp
-    ) (readFile "basic_1_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/basic_5_t_1-basic.txt" (toYaml (snd temp))
+    //        fst temp
+    //) (readFile "basic_5_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/basic_4_t_1-basic.txt" (toYaml (snd temp))
+    //        fst temp
+    //) (readFile "basic_4_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/basic_3_t_1-basic.txt" (toYaml (snd temp))
+    //        fst temp
+    //) (readFile "basic_3_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/basic_2_t_1-basic.txt" (toYaml (snd temp))
+    //        fst temp
+    //) (readFile "basic_2_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/basic_1_t_1-basic.txt" (toYaml (snd temp))
+    //        fst temp
+    //) (readFile "basic_1_t_1-basic.txt") 0
     //printParser (
     //    fun a b ->
     //        let temp = Parser.xhfBlock a b
