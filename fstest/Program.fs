@@ -994,8 +994,8 @@ let printParser f (str:string) (s:int) =
 
 [<EntryPoint>]
 let main argv =
-    //let temp = Parser.xhfBlock (readFile argv.[0]) 0
-    //printfn "%s" (toYaml (snd temp))
+    let temp = Parser.xhfBlock (readFile argv.[0]) 0
+    printfn "%s" (toYaml (snd temp))
 
 //samples__basic__10__app.xhf
 //samples__basic__10__t__1-basic.xhf
@@ -1119,12 +1119,12 @@ let main argv =
     //        let temp = Parser.xhfBlock a b
     //        fst temp
     //) (readFile "basic_9_t_1-basic.txt") 0
-    printParser (
-        fun a b ->
-            let temp = Parser.xhfBlock a b
-            writeToFile "yaml/basic_8_t_1-basic.txt" (toYaml (snd temp))
-            fst temp
-    ) (readFile "basic_8_t_1-basic.txt") 0
+    //printParser (
+    //    fun a b ->
+    //        let temp = Parser.xhfBlock a b
+    //        writeToFile "yaml/basic_8_t_1-basic.txt" (toYaml (snd temp))
+    //        fst temp
+    //) (readFile "basic_8_t_1-basic.txt") 0
     //printParser (
     //    fun a b ->
     //        let temp = Parser.xhfBlock a b
