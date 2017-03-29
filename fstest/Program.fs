@@ -943,7 +943,7 @@ let toYaml (data:Data.XHF) =
     and matchFieldNameInArray (name:Data.FieldName) =
         match name with
         | Data.FieldName (name, []) ->
-            str <- str + name
+            str <- str + (replaceStr name)
         | Data.FieldName (name, ts) ->
             let listProc (ss:Data.FieldSubscript list) = 
                 match ss with
@@ -955,12 +955,26 @@ let toYaml (data:Data.XHF) =
         | _ -> raise ToYaml
     and matchSpecialExpr (data:Data.KnownSpecials) =
         str <- data
-    let countNewLine (str:string) =
-        let mutable i:int = 0
-        String.iter (fun c -> if c.Equals('\n') then i <- i + 1 else ()) str
-        i
+    let makeStrList (str:string) =
+        let mutable ts:string list = []
+        let mutable current: string = ""
+        String.iter (fun c -> if c.Equals('\n') then ts <- ts @ [current]; current <- "" else current <- current + c.ToString()) str
+        ts
+    let countSegments (lines:string list) =
+        let mutable count = 0
+        let rec innerCount (lines:string list) =
+            match lines with
+            | a :: rest ->
+                if a.Length >= 3 && not (a.[2].Equals(' '))
+                then
+                    count <- count + 1
+                else
+                    ()
+                innerCount rest
+            | [] -> count
+        innerCount lines
     matchXHF data;
-    if (countNewLine str) <= 2
+    if (countSegments (makeStrList str)) <= 1
     then
         str <- "--- \n" + str
     else
@@ -980,8 +994,8 @@ let printParser f (str:string) (s:int) =
 
 [<EntryPoint>]
 let main argv =
-    let temp = Parser.xhfBlock (readFile argv.[0]) 0
-    printfn "%s" (toYaml (snd temp))
+    //let temp = Parser.xhfBlock (readFile argv.[0]) 0
+    //printfn "%s" (toYaml (snd temp))
 
 //samples__basic__10__app.xhf
 //samples__basic__10__t__1-basic.xhf
@@ -1105,11 +1119,12 @@ let main argv =
     //        let temp = Parser.xhfBlock a b
     //        fst temp
     //) (readFile "basic_9_t_1-basic.txt") 0
-    //printParser (
-    //    fun a b ->
-    //        let temp = Parser.xhfBlock a b
-    //        fst temp
-    //) (readFile "basic_8_t_1-basic.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            writeToFile "yaml/basic_8_t_1-basic.txt" (toYaml (snd temp))
+            fst temp
+    ) (readFile "basic_8_t_1-basic.txt") 0
     //printParser (
     //    fun a b ->
     //        let temp = Parser.xhfBlock a b
