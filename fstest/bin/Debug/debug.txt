@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
 
-PARAM[
-{
-foo{
-bar: baz
+PARAM{
+foo: 10
 }
-}
-- bar
-]

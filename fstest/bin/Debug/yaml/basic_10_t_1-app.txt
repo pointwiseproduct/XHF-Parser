@@ -1,0 +1,16 @@
+--- 
+- ~
+-
+  BODY: "<h2>Hello !</h2>\n<p></p>\n&copy; 2015 My Company, Inc.\n"
+  HEADER: 
+    - Content-type
+    - "^text/html; charset=\"?utf-8\"?"
+  FILE: index.html
+-
+  BODY: "<h2>Hello FOOO!</h2>\n<p>BARRRR</p>\n&copy; 2015 FOOO, Inc.\n"
+  PARAM: 
+    - who
+    - FOOO
+    - content
+    - BARRRR
+  FILE: index.html

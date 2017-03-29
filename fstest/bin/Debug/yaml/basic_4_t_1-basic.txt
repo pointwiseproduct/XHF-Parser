@@ -1,0 +1,23 @@
+--- 
+- ~
+-
+  BODY: "\n\nOh no!\n"
+  HEADER: 
+    - Content-type
+    - "^text/html; charset=\"?utf-8\"?"
+  FILE: index.yatt
+-
+  BODY: "\nOther(10).\n"
+  PARAM: 
+    foo: 10
+  FILE: index.yatt
+-
+  BODY: "\nSingle(3).\n"
+  PARAM: 
+    foo: 3
+  FILE: index.yatt
+-
+  BODY: "\nOne!\n"
+  PARAM: 
+    foo: 1
+  FILE: index.yatt

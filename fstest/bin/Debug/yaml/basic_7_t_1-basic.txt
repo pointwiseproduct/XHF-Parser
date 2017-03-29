@@ -1,0 +1,85 @@
+--- 
+- ~
+-
+  BODY: "<h2>request sigil mapping</h2>\n<form method=\"POST\">\n<input type=\"text\" name=\"foo\" size=\"10\" value=\"\">\n<input type=\"submit\" name=\"~\" value=\"show this\">\n<input type=\"submit\" name=\"~bar\" value=\"show bar\">\n<input type=\"submit\" name=\"!baz\" value=\"do baz\">\n</form>\n"
+  FILE: index.yatt
+-
+  BODY: "<h2>request sigil mapping</h2>\n<form method=\"POST\">\n<input type=\"text\" name=\"foo\" size=\"10\" value=\"\">\n<input type=\"submit\" name=\"~\" value=\"show this\">\n<input type=\"submit\" name=\"~bar\" value=\"show bar\">\n<input type=\"submit\" name=\"!baz\" value=\"do baz\">\n</form>\n"
+  PARAM: 
+    - ~
+    - show this
+  TITLE: ~=any -> default page
+  FILE: index.yatt
+-
+  BODY: "<h2>request sigil mapping</h2>\n<form method=\"POST\">\n<input type=\"text\" name=\"foo\" size=\"10\" value=\"FOO\">\n<input type=\"submit\" name=\"~\" value=\"show this\">\n<input type=\"submit\" name=\"~bar\" value=\"show bar\">\n<input type=\"submit\" name=\"!baz\" value=\"do baz\">\n</form>\n"
+  PARAM: 
+    - ~
+    - show this
+    - foo
+    - FOO
+  TITLE: ~=any -> default page, with foo=FOO
+  FILE: index.yatt
+-
+  BODY: "<h2>page bar</h2>\nfoo=\n"
+  PARAM: 
+    - ~bar
+    - show bar
+  TITLE: ~page=any
+  FILE: index.yatt
+-
+  BODY: "<h2>page bar</h2>\nfoo=BAR\n"
+  PARAM: 
+    - ~bar
+    - show bar
+    - foo
+    - BAR
+  TITLE: ~page=any, with foo=BAR
+  FILE: index.yatt
+-
+  BODY: "<h2>page bar</h2>\nfoo=\n"
+  PARAM: 
+    - ~~
+    - bar
+  TITLE: ~~=page
+  FILE: index.yatt
+-
+  BODY: OK. foo=(NULL)
+  PARAM: 
+    - !baz
+    - any
+  TITLE: !baz=any
+  METHOD: POST
+  FILE: index.yatt
+-
+  BODY: OK. foo=BAZ
+  PARAM: 
+    - !baz
+    - any
+    - foo
+    - BAZ
+  TITLE: !baz=any, with foo=BAZ
+  METHOD: POST
+  FILE: index.yatt
+-
+  BODY: OK. foo=(NULL)
+  PARAM: 
+    - !!
+    - baz
+  TITLE: !!=baz
+  METHOD: POST
+  FILE: index.yatt
+-
+  BODY: "checked=\n1\n2\n5\n.\n"
+  PARAM: 
+    - ~testlistarg
+    - show checked list
+    - chklst
+    - 
+      - 1
+      - 2
+      - 5
+  SITE_CONFIG: 
+    - no_nested_query
+    - 1
+  TITLE: arg=list auto mapping
+  FILE: index.yatt

@@ -2,7 +2,4 @@
 - ~
 -
   PARAM: 
-    - 
-      foo: 
-        bar: baz
-    - bar
+    foo: 10
