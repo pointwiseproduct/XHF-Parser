@@ -960,7 +960,7 @@ let toYaml (data:Data.XHF) =
         String.iter (fun c -> if c.Equals('\n') then i <- i + 1 else ()) str
         i
     matchXHF data;
-    if (countNewLine str) <= 1
+    if (countNewLine str) <= 2
     then
         str <- "--- \n" + str
     else
@@ -980,8 +980,8 @@ let printParser f (str:string) (s:int) =
 
 [<EntryPoint>]
 let main argv =
-    let temp = Parser.xhfBlock (readFile argv.[0]) 0
-    printfn "%s" (toYaml (snd temp))
+    //let temp = Parser.xhfBlock (readFile argv.[0]) 0
+    //printfn "%s" (toYaml (snd temp))
 
 //samples__basic__10__app.xhf
 //samples__basic__10__t__1-basic.xhf
@@ -1116,12 +1116,12 @@ let main argv =
     //        writeToFile "yaml/basic_7_t_1-basic.txt" (toYaml (snd temp))
     //        fst temp
     //) (readFile "basic_7_t_1-basic.txt") 0
-    //printParser (
-    //    fun a b ->
-    //        let temp = Parser.xhfBlock a b
-    //        writeToFile "yaml/basic_7-app.txt" (toYaml (snd temp))
-    //        fst temp
-    //) (readFile "basic_7-app.txt") 0
+    printParser (
+        fun a b ->
+            let temp = Parser.xhfBlock a b
+            writeToFile "yaml/basic_7-app.txt" (toYaml (snd temp))
+            fst temp
+    ) (readFile "basic_7-app.txt") 0
     //printParser (
     //    fun a b ->
     //        let temp = Parser.xhfBlock a b
