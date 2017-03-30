@@ -1,0 +1,326 @@
+--- 
+- ~
+- 
+  OUT: "<h2>Hello world!</h2>\n"
+  IN: "<h2>Hello <?perl= 'world!'?></h2>\n"
+  TAG: pi
+  TITLE: toplevel template
+- 
+  ERROR: "^Unknown declarator \\(<!perl:bar >\\)"
+  IN: "<!perl:bar>\n<!perl:widget bar>bar\n<!perl:widget baz>baz\n"
+  FILE: synerr.html
+  TITLE: syntax error
+- 
+  IN: foo bar baz
+  FILE: nodecl.html
+- 
+  OUT: foo bar baz
+  IN: "<yatt:nodecl/>"
+  TITLE: file widget without decl
+- 
+  OUT: "<h2>Hello</h2>\n3 x 8 = 24\nworld!\n"
+  PARAM: 
+    - 3
+    - 8
+  IN: "<!yatt:args x y>\n<yatt:hello x y/>world!\n\n<!yatt:widget hello x y>\n<h2>Hello</h2>\n&perl:x; x &perl:y; = <?perl= $x * $y?>\n"
+  TITLE: one template, bodyless, with entities.
+- 
+  OUT: "<h2>Hello world!</h2>\n8 x 3 = 24\n\n"
+  PARAM: 
+    - 8
+    - 3
+  IN: "<!yatt:args x y>\n<yatt:hello x y>world!</yatt:hello>\n\n<!yatt:widget hello x y\n --\n  You can write comments here.\n --\n>\n<h2>Hello <yatt:body/></h2>\n&perl:x; x &perl:y; = <?perl= $x * $y?>\n"
+  TITLE: one template, with body
+- 
+  OUT: "<h2>Hello foo world! bar</h2>\n\n"
+  PARAM: []
+
+  IN: "<!yatt:args>\n<yatt:hello>&yatt:p; world! &yatt:q;</yatt:hello>\n\n<!yatt:widget hello body = [code p q]>\n<h2>Hello <yatt:body p=\"foo\" q=\"bar\"/></h2>\n"
+  TITLE: one template, with body + arg
+- 
+  ERROR: "Misplaced yatt:widget in: \\([^\\)]+\\), at file \\S+ line 4"
+  IN: "<form>\n <yatt:hello/>\n\n<!yatt:widget hello>\n"
+  TITLE: Misplaced widget declaration.
+  SKIP: 1
+- 
+  OUT: "(<h2>x</h2>\n)\n"
+  IN: "(<yatt:foo\n-- comment1 --\n----- comment2 -----\n--\n  comment3\n--\nbaz=\"x\"/>)\n\n<!yatt:widget foo baz>\n<h2>&yatt:baz;</h2>\n"
+  TITLE: comment in widget call
+- 
+  OUT: "a - b\n c\n"
+  PARAM: 
+    - a
+    - b
+    - c
+  IN: "<!yatt:widget hello x y>\n&yatt:x; - &yatt:y;\n<!yatt:args x y z>\n<yatt:hello x y/> &yatt:z;\n"
+  TITLE: widget -> args ordering.
+- 
+  IN: "<!yatt:args title=text>\n<html>\n  <head>\n    <title>&yatt:title;</title>\n  </head>\n<body>\n  <h2>&yatt:title;</h2>\n  <yatt:body />\n</body>\n</html>"
+  FILE: envelope.html
+- 
+  OUT: "<html>\n  <head>\n    <title>foobar</title>\n  </head>\n<body>\n  <h2>foobar</h2>\n  Hello world!\n</body>\n</html>\n"
+  IN: "<yatt:envelope title=\"foobar\"><yatt:hello \"world!\"/></yatt:envelope>\n<!yatt:widget hello who>\nHello &yatt:who;\n"
+  TITLE: use of envelope
+- 
+  ERROR: "^Argument 'x' is missing"
+  PARAM: 
+    - ''
+    - ''
+  IN: "<yatt:foo y=\"hoehoe\"/>\n<!yatt:widget foo x=! y>\n&yatt:x; &yatt:y;\n"
+  TITLE: "required arg !"
+- 
+  ERROR: "^Argument 'x' is undef!"
+  PARAM: []
+
+  IN: "<!yatt:args x=!>\n&yatt:x;\n"
+  TITLE: "runtime error for required arg !"
+- 
+  OUT: "<h2>xval and 8</h2>\n"
+  PARAM: []
+
+  IN: "<!yatt:args x=text|xval y=scalar|8>\n<h2>&yatt:x; and &yatt:y;</h2>\n"
+  TITLE: arg default |
+- 
+  OUT: "<h2>xval and 8</h2>\n"
+  PARAM: 
+    - ''
+    - 0
+- 
+  OUT: "<h2>foo and bar</h2>\n"
+  PARAM: 
+    - foo
+    - bar
+- 
+  OUT: "<h2>xval and 8</h2>\n"
+  PARAM: []
+
+  IN: "<!yatt:args x=text?xval y=scalar?8>\n<h2>&yatt:x; and &yatt:y;</h2>\n"
+  TITLE: arg default ?
+- 
+  OUT: "<h2>xval and 8</h2>\n"
+  PARAM: 
+    - ''
+    - ''
+- 
+  OUT: "<h2>0 and 0</h2>\n"
+  PARAM: 
+    - 0
+    - 0
+- 
+  OUT: "<h2>xval and 8</h2>\n"
+  PARAM: []
+
+  IN: "<!yatt:args x=\"text/xval\" y=\"scalar/8\">\n<h2>&yatt:x; and &yatt:y;</h2>\n"
+  TITLE: arg default /
+- 
+  OUT: "<h2> and </h2>\n"
+  PARAM: 
+    - ''
+    - ''
+- 
+  OUT: "<h2>0 and 0</h2>\n"
+  PARAM: 
+    - 0
+    - 0
+- 
+  OUT: "<h2>xval and foo(xval)</h2>\n"
+  PARAM: []
+
+  IN: "<!yatt:args x=?xval y=\"?foo(&yatt:x;)\">\n<h2>&yatt:x; and &yatt:y;</h2>\n"
+  TITLE: arg default which refers other arg.
+- 
+  OUT: "<h2>xval and foo(xval)</h2>\n"
+  PARAM: 
+    - ''
+    - ''
+- 
+  OUT: "<h2>0 and foo(0)</h2>\n"
+  PARAM: 
+    - 0
+- 
+  OUT: "<div><h2>&lt;foo&gt;&amp;bar;</h2>\nmoemoe\n</div>\n"
+  PARAM: 
+    - "<foo>&bar;"
+  IN: "<!yatt:args foo>\n<div><yatt:bar &yatt:foo;/></div>\n\n<!yatt:widget bar x y=\"?moemoe\">\n<h2>&yatt:x;</h2>\n&yatt:y;\n"
+  TITLE: call with bare argument.
+- 
+  OUT: "<div><h2>&lt;foo&gt;&amp;bar;</h2>\nmoemoe\n</div>\n"
+  PARAM: 
+    - "<foo>&bar;"
+  IN: "<!yatt:args foo>\n<div><yatt:bar '&yatt:foo;'/></div>\n\n<!yatt:widget bar x y=\"?moemoe\">\n<h2>&yatt:x;</h2>\n&yatt:y;\n"
+  TITLE: call with quoted argument (single entity only)
+- 
+  OUT: "<h2>&lt;foo&gt;&amp;bar;</h2>\n"
+  PARAM: 
+    - "<foo>&bar;"
+  IN: "<!yatt:args x>\n<h2>&yatt:x;</h2>\n"
+  TITLE: entvar escaping
+- 
+  OUT: "<div><h2>pre&lt;foo&gt;&amp;bar;post</h2>\nmoemoe\n</div>\n"
+  PARAM: 
+    - "<foo>&bar;"
+  IN: "<!yatt:args foo>\n<div><yatt:bar \"pre&yatt:foo;post\"/></div>\n\n<!yatt:widget bar x y=\"?moemoe\">\n<h2>&yatt:x;</h2>\n&yatt:y;\n"
+  TAG: var
+  TITLE: "entvar:text in mid of argument."
+- 
+  OUT: "<h2>9 + 2 = 11</h2>\n\n"
+  IN: "<yatt:foo x=\"3 * 3\"/>\n<!yatt:widget foo x=scalar y=\"scalar?&yatt:x; + 2\">\n<h2>&yatt:x; + 2 = &yatt:y;</h2>\n"
+  TITLE: "entvar:scalar"
+- 
+  OUT: "<h2>3-5-seven</h2>\n\n"
+  IN: "<yatt:foo x=\"3 .. 6, 'seven'\"/>\n<!yatt:widget foo x=list>\n<h2>&yatt:x[0];-&yatt:x[2];-&yatt:x[4];</h2>\n"
+  TITLE: "entvar:list"
+- 
+  OUT: "<div id=\"foobar\">\n  <h2><b>B</b>old</h2>\n  <div class=\"article\">\n<span class=\"emph\">foobar</span>\n</div>\n  <div class=\"footer\">\n<span class=\"small\">myfooter</span>\n</div>\n</div>\n\n"
+  IN: "<yatt:foo id=\"foobar\" class=\"article\">\n  <:yatt:title><b>B</b>old</:yatt:title>\n<span class=\"emph\">foobar</span>\n<:yatt:footer/>\n<span class=\"small\">myfooter</span>\n</yatt:foo>\n\n<!yatt:widget foo id class title=html body=html footer=html>\n<div id=\"&yatt:id;\">\n  <h2>&yatt:title;</h2>\n  <div class=\"&yatt:class;\">&yatt:body;</div>\n  <div class=\"footer\">&yatt:footer;</div>\n</div>\n"
+  TITLE: "entvar:html"
+- 
+  OUT: "<div id=\"foobar\">\n  <h2><b>B</b>old</h2>\n  <div class=\"article\"><span class=\"emph\">foobar</span></div>\n  <div class=\"footer\">\n  <span class=\"small\">myfooter</span>\n  </div>\n</div>\n\n"
+  IN: "<yatt:foo id=\"foobar\" class=\"article\">\n  <:yatt:title><b>B</b>old</:yatt:title>\n<span class=\"emph\">foobar</span>\n<:yatt:footer/>\n<span class=\"small\">myfooter</span>\n</yatt:foo>\n\n<!yatt:widget foo id class title=code body=code footer=code>\n<div id=\"&yatt:id;\">\n  <h2>&yatt:title();</h2>\n  <div class=\"&yatt:class;\">&yatt:body();</div>\n  <div class=\"footer\">\n  &yatt:footer();\n  </div>\n</div>\n"
+  TITLE: "entvar:code"
+- 
+  OUT: "<div id=\"foobar\">\n  <h2><b>B</b>old</h2>\n  <div class=\"article\">\n   <span class=\"emph\">foobar</span>  </div>\n  <div class=\"footer\">\n  <span class=\"small\">myfooter</span>  </div>\n</div>\n\n"
+  IN: "<yatt:foo id=\"foobar\" class=\"article\">\n  <:yatt:title><b>B</b>old</:yatt:title>\n<span class=\"emph\">foobar</span>\n<:yatt:footer/>\n<span class=\"small\">myfooter</span>\n</yatt:foo>\n\n<!yatt:widget foo id class title=code body=code footer=code>\n<div id=\"&yatt:id;\">\n  <h2><yatt:title/></h2>\n  <div class=\"&yatt:class;\">\n   <yatt:body/>\n  </div>\n  <div class=\"footer\">\n  <yatt:footer/>\n  </div>\n</div>\n"
+  TITLE: var element
+- 
+  OUT: "<h2>foo</h2>\n\n"
+  PARAM: 
+    - foo
+  IN: "<!yatt:args x=text>\n<yatt:foo y=x/>\n<!yatt:widget foo y>\n<h2>&yatt:y;</h2>\n"
+  TITLE: bareword argument as pass thru.
+- 
+  OUT: "<h2>3</h2>\n\n"
+  IN: "<yatt:foo y=3/>\n<!yatt:widget foo y>\n<h2>&yatt:y;</h2>\n"
+  TITLE: bareword argument (leading decimal should not be confused as varname)
+- 
+  ERROR: Unknown arg 'y'
+  IN: "<yatt:foo y=3/>\n<!yatt:widget foo x=scalar>\n&yatt:x;\n"
+  TITLE: Unknown argument (k=v)
+- 
+  ERROR: Unknown arg 'y'
+  IN: "<yatt:foo y/>\n<!yatt:widget foo x=scalar>\n&yatt:x;\n"
+  TITLE: Unknown argument (valueless)
+- 
+  ERROR: "Global symbol \"\\$x\" requires explicit package name (\\(did you forget[^\\)]+\\) )?at \\S+ line 2[\\.,]"
+  IN: "<!yatt:args x=html>\n<?perl= $x ?>\n"
+  TITLE: "Unknown variable: html"
+- 
+  OUT: "1\n\n"
+  IN: "<yatt:foo x/>\n<!yatt:widget foo x=bool>\n&yatt:x;\n"
+  TITLE: valueless bool arg -> 1
+- 
+  OUT: "1\n\n"
+  IN: "<yatt:foo x/>\n<!yatt:widget foo x=flag>\n&yatt:x;\n"
+  TITLE: valueless flag arg -> 1
+- 
+  ERROR: "^valueless arg 'x'"
+  IN: "<yatt:foo x/>\n<!yatt:widget foo x=value>\n&yatt:x;\n"
+  TITLE: valueless value for value => error.
+- 
+  ERROR: "^valueless arg 'x'"
+  IN: "<yatt:foo x/>\n<!yatt:widget foo x=list>\n&yatt:x;\n"
+  TITLE: valueless value for list => error.
+- 
+  ERROR: "^valueless arg 'x'"
+  IN: "<yatt:foo x/>\n<!yatt:widget foo x>\n&yatt:x;\n"
+  TITLE: valueless arg for text => error.
+- 
+  OUT: "<h2>&lt;b&gt;foo&lt;/b&gt;</h2>\n\n"
+  PARAM: 
+    - <b>foo</b>
+  IN: "<!yatt:args x=text>\n<yatt:foo x/>\n<!yatt:widget foo x=html>\n<h2>&yatt:x;</h2>\n"
+  TITLE: valueless arg pass thru (text -> html)
+- 
+  OUT: "<h2><b>foo</b></h2>\n\n"
+  PARAM: 
+    - <b>foo</b>
+  IN: "<!yatt:args x=html>\n<yatt:foo x/>\n<!yatt:widget foo x=html>\n<h2>&yatt:x;</h2>\n"
+  TITLE: valueless arg pass thru (html -> html)
+- 
+  OUT: "<b><ul>bar(foo)</ul>\n</b>\n\n"
+  IN: "<yatt:listx>bar(&yatt:label;)</yatt:listx>\n\n<!yatt:widget listx body=[code label]>\n<b><yatt:list body/></b>\n\n<!yatt:widget list body=[code row]>\n<ul><yatt:body row=\"foo\"/></ul>\n"
+  TITLE: body pass thru, 3level
+- 
+  OUT: "foo|(X)||(Y)|\nBODY\n|bar\n\n"
+  IN: "<yatt:foo x=\"X\" y=\"Y\">\n  <:yatt:arg></:yatt:arg>\nBODY\n</yatt:foo>\n\n<!yatt:widget foo x arg=html? y body=html?>\nfoo|(&yatt:x;)|&yatt:arg;|(&yatt:y;)|&yatt:body;|bar\n"
+  TITLE: "empty :att arg"
+- 
+  OUT: "<div class=\"foo\"></div>\n"
+  PARAM: 
+    - foo
+  IN: "<!yatt:args class=attr>\n<div&yatt:class;></div>\n"
+  TITLE: "attr (simple case: attName == varName)"
+- 
+  OUT: "<div></div>\n"
+  PARAM: 
+    - ''
+- 
+  OUT: "<input  type=\"text\"  name=\"q1\"  value=\"foo&lt;h2&gt;\"  size=\"10\"/>\n"
+  PARAM: 
+    - ''
+    - q1
+    - foo<h2>
+    - ''
+  IN: "<!yatt:args type=attr?text name=attr! value=attr! size=attr?10>\n<input &yatt:type; &yatt:name; &yatt:value; &yatt:size;/>\n"
+  TITLE: attr with default value
+- 
+  OUT: "<div class=\"foo bar baz\"></div>\n"
+  PARAM: 
+    - foo
+  IN: "<!yatt:args color=attr:class>\n<div&yatt:color(bar,baz);></div>\n"
+  TITLE: attr(other,value)
+- 
+  OUT: "<div class=\"bar baz\"></div>\n"
+  PARAM: []
+
+- 
+  OUT: "(baz)\n"
+  PARAM: 
+    - 
+      - 2
+      - ''
+      - 
+        - foo
+        - bar
+        - baz
+  IN: "<!yatt:args ls=list>\n(&yatt:ls[-1][:ls[0]];)\n"
+  TITLE: nested array subscript
+- 
+  OUT: "(foo)\n"
+  PARAM: 
+    - 
+      - 0
+      - ''
+      - 
+        - foo
+        - bar
+        - baz
+- 
+  OUT: "(bar)\n"
+  PARAM: 
+    - 
+      foo: bar
+      baz: bang
+    - 
+      - 
+        - foo
+  IN: "<!yatt:args dict=value ix=list>\n(&yatt:dict{:ix[0][0]};)\n"
+  TITLE: nested hash subscript
+- 
+  OUT: "|foo|bar\\|baz\\qux\n"
+  IN: "<!yatt:args x=\"?qux\">\n|foo|bar\\|baz\\&yatt:x;\n"
+  TITLE: bar and backslash
+- 
+  IN: "<!yatt:widget foo xa xb>\n<h2>foo: &yatt:xa;</h2>\n&yatt:xb;\n"
+  FILE: base1.yatt
+- 
+  IN: "<!yatt:args xa xb>\n<h2>bar: &yatt:xa;</h2>\n&yatt:xb;\n"
+  FILE: base2/bar.yatt
+- 
+  OUT: "<h2>foo: bar</h2>\nbaz\n\n"
+  IN: "<!yatt:base file=\"base1.yatt\">\n<yatt:foo xa=\"bar\" xb=\"baz\"/>\n"
+  TITLE: "base \"base1.yatt\""
+- 
+  OUT: "<h2>bar: qux</h2>\nquux\n\n"
+  IN: "<!yatt:base dir=\"base2\">\n<yatt:bar xa=\"qux\" xb=\"quux\"/>\n"
+  TITLE: "base \"base2\""
