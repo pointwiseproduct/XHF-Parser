@@ -417,6 +417,15 @@ module Parser = begin
             | _ -> reraise ()
 
     // --------
+    // remove tail space
+    let rec removeTailSpace (str:string) =
+        if str.Length > 0 && str.[str.Length - 1] = ' '
+        then
+            removeTailSpace str.[0..str.Length - 2]
+        else
+            str
+
+    // --------
     // trimmed-text
     let trimmedText (str:string) (s:int) =
         if s >= str.Length then (failedToken s, Data.Trimmed "") else
@@ -439,7 +448,7 @@ module Parser = begin
                 )
             ]))
             <-> ()
-        (temp, Data.Trimmed tx)
+        (temp, Data.Trimmed (removeTailSpace tx))
         with
             | ConcatenationFailed -> (failedToken s, Data.Trimmed "")
             | _ -> reraise ()
@@ -874,17 +883,8 @@ let toYaml (raw:string) (data:Data.XHF) =
     let mutable indent = 0
     let rec outIndent (i:int) =
         if i = 0 then () else str <- str + "  "; outIndent (i - 1)
-    let replaceStr (raw:String) =
-        let mutable str = raw
-        let rec removeTailSpace () =
-            if str.Length > 0 && str.[str.Length - 1] = ' '
-            then
-                str <- str.[0..str.Length - 2]
-                removeTailSpace ()
-            else
-                ()
+    let replaceStr (str:string) =
         let mutable ret = ""
-        removeTailSpace ()
         if str.Length = 0
         then ret <- "''"
         else if testYattTag str
